@@ -78,6 +78,28 @@ body{background:radial-gradient(1100px 520px at 100% -8%,#CFE2FF 0%,rgba(207,226
 .sect{font-size:19px;font-weight:800;margin:0 0 12px}
 .brand{box-shadow:0 4px 16px rgba(25,31,40,.05)}
 .brand .regions{color:var(--sub);font-size:12.5px;font-weight:500;margin-top:2px}
+.search{position:relative;margin:4px 0 14px}
+.search input{padding-left:46px;box-shadow:0 4px 16px rgba(25,31,40,.05)}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--sub)}
+.tabs{display:flex;background:#E4E8EC;border-radius:16px;padding:4px;margin-bottom:16px}
+.tabs button{flex:1;background:none;padding:12px;border-radius:13px;color:var(--sub)}
+.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.hot{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 22px;padding:2px 20px;scrollbar-width:none}
+.hot::-webkit-scrollbar{display:none}
+.hot button{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:10px 14px 10px 10px;border-radius:999px;font-size:14.5px;box-shadow:0 4px 14px rgba(25,31,40,.06)}
+.hot .av{width:28px;height:28px;border-radius:50%;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 12px;padding:0 20px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex-shrink:0;padding:9px 15px;border-radius:999px;font-size:14px}
+.chips button.on{background:var(--ink);color:#fff}
+.rows{background:#fff;border-radius:22px;padding:6px;box-shadow:0 4px 16px rgba(25,31,40,.05)}
+.rowi{width:100%;display:flex;align-items:center;gap:12px;background:none;padding:13px 12px;border-radius:16px;text-align:left;font-weight:700}
+.rowi:hover{background:#F7F9FB}
+.rowi .av{width:42px;height:42px;border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rowi small{display:block;color:var(--sub);font-weight:500;font-size:13.5px;margin-top:1px}
+.rowi .chev{margin-left:auto;color:#C4CAD0;font-size:20px}
+.badge{display:inline-block;font-size:11.5px;font-weight:800;color:var(--red);background:#FFEEEF;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.cnt{color:var(--sub);font-size:13.5px;margin:0 4px 8px}
 .site-foot{margin-top:34px;padding-top:18px;border-top:1px solid #DDE2E7;color:var(--sub);font-size:12.5px;line-height:1.7}</style>
 </head>
 <body>
@@ -116,27 +138,69 @@ function foot(next, label, back) {
 const brand = () => BRANDS.find(b => b.이름 === F.브랜드);
 
 /* 1. 브랜드 */
+const SEARCH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>';
+const avatar = n => `<div class="av" style="background:${color(n)}">${esc(String(n).slice(0, 1))}</div>`;
+const S1 = { 방식:'지역', 찾기:'', 업종:'전체', 시도:'', 구군:'' };
 function step1() {
-  F.단계 = 1; steps(); window.scrollTo(0, 0); $('#steps').hidden = true;
+  F.단계 = 1; steps(); $('#steps').hidden = true;
   const 매장수 = BRANDS.reduce((n, b) => n + b.매장.length, 0);
   const 지역수 = new Set(BRANDS.flatMap(b => b.매장.map(m => m.시도).filter(Boolean))).size;
+  const 뽑는 = BRANDS.filter(b => b.채용중).sort((a, b) => b.채용중 - a.채용중).slice(0, 8);
   $('#view').innerHTML = `
     <section class="hero">
       <svg viewBox="0 0 96 96" fill="none" aria-hidden="true"><rect x="14" y="30" width="68" height="50" rx="12" fill="rgba(255,255,255,.95)"/><path d="M36 30v-6a6 6 0 0 1 6-6h12a6 6 0 0 1 6 6v6" stroke="#fff" stroke-width="5" stroke-linecap="round"/><rect x="14" y="48" width="68" height="6" fill="#D6E4FF"/><rect x="42" y="44" width="12" height="14" rx="3" fill="#3182F6"/><circle cx="78" cy="22" r="7" fill="#FFD66B"/></svg>
       <span class="tag">통합 인사지원</span>
       <h1>매장에서 함께 일할<br>동료를 찾고 있어요</h1>
-      <p>브랜드를 고르고 3분이면 지원 끝!<br>담당자가 직접 연락드려요</p>
+      <p>가까운 매장이나 브랜드를 고르고<br>3분이면 지원 끝! 담당자가 직접 연락드려요</p>
       <div class="stats"><div><b>${BRANDS.length}</b><small>브랜드</small></div><div><b>${매장수}</b><small>매장</small></div><div><b>${지역수 || '-'}</b><small>지역</small></div></div>
     </section>
-    <div class="how"><div><i>1</i>브랜드 고르기<small>일하고 싶은 곳</small></div><div><i>2</i>지원서 작성<small>3분이면 끝</small></div><div><i>3</i>담당자 연락<small>면접 안내</small></div></div>
-    <div class="sect">어느 브랜드에 지원하시나요?</div>
-    <div class="grid">${BRANDS.map(b => { const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
-      return `<button class="brand ${F.브랜드 === b.이름 ? 'on' : ''}" data-b="${esc(b.이름)}">
-      <div class="av" style="background:${color(b.이름)}">${esc(b.이름.slice(0, 1))}</div><div>${esc(b.이름)}<br><small>매장 ${b.매장.length}곳</small>${지역.length ? `<div class="regions">${esc(지역.slice(0, 3).join(' · '))}${지역.length > 3 ? ' 외' : ''}</div>` : ''}</div></button>`; }).join('')}</div>
-    <div class="site-foot">주식회사 아리오씨오에스 · 입사지원<br>제출하신 정보는 채용 진행 목적으로만 사용됩니다.</div>`;
-  document.querySelectorAll('.brand').forEach(el => el.onclick = () => { if (F.브랜드 !== el.dataset.b) Object.assign(F, { 시도:'', 구군:'', 매장코드:'' }); F.브랜드 = el.dataset.b; step2(); });
-  foot(null);
+    <div class="search">${SEARCH_SVG}<input id="q" placeholder="브랜드 이름을 입력하세요" value="${esc(S1.찾기)}"></div>
+    ${뽑는.length ? `<div class="sect">🔥 지금 많이 뽑는 브랜드</div><div class="hot">${뽑는.map(b => `<button data-b="${esc(b.이름)}">${avatar(b.이름)}${esc(b.이름)}</button>`).join('')}</div>` : ''}
+    <div class="tabs"><button data-m="지역" class="${S1.방식 === '지역' ? 'on' : ''}">📍 지역으로 찾기</button><button data-m="브랜드" class="${S1.방식 === '브랜드' ? 'on' : ''}">🏷️ 브랜드로 찾기</button></div>
+    <div id="list"></div>
+    <div class="site-foot">통합 인사지원 포탈 사이트<br>제출하신 정보는 채용 진행 목적으로만 사용됩니다.</div>`;
+  document.querySelectorAll('.hot button').forEach(el => el.onclick = () => pickBrand(el.dataset.b));
+  document.querySelectorAll('.tabs button').forEach(el => el.onclick = () => { S1.방식 = el.dataset.m; step1(); });
+  $('#q').oninput = e => {
+    S1.찾기 = e.target.value;
+    if (S1.찾기 && S1.방식 !== '브랜드') { S1.방식 = '브랜드'; step1(); const q = $('#q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); return; }
+    drawList();
+  };
+  drawList(); foot(null);
 }
+function drawList() {
+  const el = $('#list'), q = S1.찾기.trim().toLowerCase();
+  if (S1.방식 === '브랜드') {
+    const 업종들 = [...new Set(BRANDS.map(b => b.구분).filter(Boolean))].sort();
+    const l = BRANDS.filter(b => (S1.업종 === '전체' || b.구분 === S1.업종) && (!q || b.이름.toLowerCase().indexOf(q) >= 0))
+      .sort((a, b) => a.이름.localeCompare(b.이름, 'ko'));
+    el.innerHTML = (업종들.length ? `<div class="chips">${['전체'].concat(업종들).map(c => `<button class="${S1.업종 === c ? 'on' : ''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : '')
+      + `<div class="cnt">브랜드 ${l.length}개</div><div class="rows">${l.map(b => {
+          const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
+          return `<button class="rowi" data-b="${esc(b.이름)}">${avatar(b.이름)}<div>${esc(b.이름)}${b.채용중 ? '<span class="badge">채용중</span>' : ''}<small>${b.구분 ? esc(b.구분) + ' · ' : ''}매장 ${b.매장.length}곳${지역.length ? ' · ' + esc(지역.slice(0, 3).join(' · ')) + (지역.length > 3 ? ' 외' : '') : ''}</small></div><span class="chev">›</span></button>`;
+        }).join('') || '<div class="empty">찾는 브랜드가 없어요</div>'}</div>`;
+    el.querySelectorAll('.chips button').forEach(b => b.onclick = () => { S1.업종 = b.dataset.c; drawList(); });
+    el.querySelectorAll('.rowi').forEach(b => b.onclick = () => pickBrand(b.dataset.b));
+    return;
+  }
+  // 지역으로 찾기: 브랜드 상관없이 그 지역 매장을 모아 보여줌 → 고르면 바로 지원서
+  const 전체 = BRANDS.flatMap(b => b.매장.map(m => Object.assign({ 브랜드:b.이름 }, m)));
+  const 시도들 = [...new Set(전체.map(m => m.시도).filter(Boolean))].sort();
+  const 구군들 = [...new Set(전체.filter(m => m.시도 === S1.시도).map(m => m.구군).filter(Boolean))].sort();
+  const l = 전체.filter(m => S1.시도 && m.시도 === S1.시도 && (!S1.구군 || m.구군 === S1.구군))
+    .sort((a, b) => (b.채용중 - a.채용중) || a.매장.localeCompare(b.매장, 'ko'));
+  el.innerHTML = `<div class="row2">
+      <select id="r1"><option value="">시 · 도 고르기</option>${시도들.map(s => `<option ${s === S1.시도 ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+      <select id="r2" ${S1.시도 ? '' : 'disabled'}><option value="">시 · 군 · 구 전체</option>${구군들.map(s => `<option ${s === S1.구군 ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select></div>`
+    + (S1.시도
+      ? `<div class="cnt">${esc(S1.시도)}${S1.구군 ? ' ' + esc(S1.구군) : ''} · 매장 ${l.length}곳</div><div class="rows">${l.map(m => `<button class="rowi" data-b="${esc(m.브랜드)}" data-c="${esc(m.매장코드)}">${avatar(m.브랜드)}<div>${esc(m.매장)}${m.채용중 ? '<span class="badge">채용중</span>' : ''}<small>${esc(m.브랜드)} · ${esc([m.시도, m.구군].filter(Boolean).join(' '))}</small></div><span class="chev">›</span></button>`).join('') || '<div class="empty">이 지역에는 아직 매장이 없어요</div>'}</div>`
+      : '<div class="empty">시 · 도를 고르면 가까운 매장이 보여요</div>');
+  $('#r1').onchange = e => { S1.시도 = e.target.value; S1.구군 = ''; drawList(); };
+  $('#r2').onchange = e => { S1.구군 = e.target.value; drawList(); };
+  el.querySelectorAll('.rowi').forEach(b => b.onclick = () => { F.브랜드 = b.dataset.b; F.매장코드 = b.dataset.c; F.시도 = ''; F.구군 = ''; F.바로 = true; step3(); });
+}
+function pickBrand(name) { if (F.브랜드 !== name) Object.assign(F, { 시도:'', 구군:'', 매장코드:'' }); F.브랜드 = name; F.바로 = false; step2(); }
+
 /* 2. 지역 · 매장 */
 function step2() {
   F.단계 = 2; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
@@ -158,7 +222,7 @@ function step2() {
 
 /* 3. 지원서 */
 function step3() {
-  F.단계 = 3; steps(); window.scrollTo(0, 0);
+  F.단계 = 3; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
   const 지역 = m ? [m.시도, m.구군].filter(Boolean).join(' ') : [F.시도, F.구군].filter(Boolean).join(' ');
   $('#view').innerHTML = `<h1>지원서를<br>작성해 주세요</h1><p class="lead">${esc(b.이름)} · ${esc(m ? m.매장 : '매장 상관없음')}${지역 ? ' · ' + esc(지역) : ''}</p>
@@ -180,7 +244,7 @@ function step3() {
     </div>
     <div class="err" id="err"></div>`;
   $('#연락처').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 11); e.target.value = d.replace(/^(\d{3})(\d{1,4})?(\d{1,4})?$/, (_, a, b2, c) => [a, b2, c].filter(Boolean).join('-')); };
-  foot(submit, '지원하기', () => { keep(); step2(); });
+  foot(submit, '지원하기', () => { keep(); F.바로 ? step1() : step2(); });
 }
 function keep() { ['이름', '연락처', '생년월일', '경력', '자기소개'].forEach(k => F[k] = $('#' + k).value); F.동의 = $('#동의').checked; }
 async function submit() {
