@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>통합 인사지원 포탈 사이트</title>
+<title>통합 입사지원 포탈 사이트</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 /* 아리오 통합 입사지원 — Apps Script 프로젝트에 HTML 파일 '지원'으로 붙여 넣으면 웹앱주소?page=apply 로 열림 */
@@ -104,7 +104,7 @@ body{background:radial-gradient(1100px 520px at 100% -8%,#CFE2FF 0%,rgba(207,226
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><img id="logo" alt=""><b>통합 인사지원 포탈 사이트</b></div>
+  <div class="top"><img id="logo" alt=""><b>통합 입사지원 포탈 사이트</b></div>
   <div class="steps" id="steps"><i></i><i></i><i></i></div>
   <main id="view"><div class="empty">불러오는 중…</div></main>
 </div>
@@ -149,7 +149,7 @@ function step1() {
   $('#view').innerHTML = `
     <section class="hero">
       <svg viewBox="0 0 96 96" fill="none" aria-hidden="true"><rect x="14" y="30" width="68" height="50" rx="12" fill="rgba(255,255,255,.95)"/><path d="M36 30v-6a6 6 0 0 1 6-6h12a6 6 0 0 1 6 6v6" stroke="#fff" stroke-width="5" stroke-linecap="round"/><rect x="14" y="48" width="68" height="6" fill="#D6E4FF"/><rect x="42" y="44" width="12" height="14" rx="3" fill="#3182F6"/><circle cx="78" cy="22" r="7" fill="#FFD66B"/></svg>
-      <span class="tag">통합 인사지원</span>
+      <span class="tag">통합 입사지원</span>
       <h1>매장에서 함께 일할<br>동료를 찾고 있어요</h1>
       <p>가까운 매장이나 브랜드를 고르고<br>3분이면 지원 끝! 담당자가 직접 연락드려요</p>
       <div class="stats"><div><b>${BRANDS.length}</b><small>브랜드</small></div><div><b>${매장수}</b><small>매장</small></div><div><b>${지역수 || '-'}</b><small>지역</small></div></div>
@@ -158,7 +158,7 @@ function step1() {
     ${뽑는.length ? `<div class="sect">🔥 지금 많이 뽑는 브랜드</div><div class="hot">${뽑는.map(b => `<button data-b="${esc(b.이름)}">${avatar(b.이름)}${esc(b.이름)}</button>`).join('')}</div>` : ''}
     <div class="tabs"><button data-m="지역" class="${S1.방식 === '지역' ? 'on' : ''}">📍 지역으로 찾기</button><button data-m="브랜드" class="${S1.방식 === '브랜드' ? 'on' : ''}">🏷️ 브랜드로 찾기</button></div>
     <div id="list"></div>
-    <div class="site-foot">통합 인사지원 포탈 사이트<br>제출하신 정보는 채용 진행 목적으로만 사용됩니다.</div>`;
+    <div class="site-foot">통합 입사지원 포탈 사이트<br>제출하신 정보는 채용 진행 목적으로만 사용됩니다.</div>`;
   document.querySelectorAll('.hot button').forEach(el => el.onclick = () => pickBrand(el.dataset.b));
   document.querySelectorAll('.tabs button').forEach(el => el.onclick = () => { S1.방식 = el.dataset.m; step1(); });
   $('#q').oninput = e => {
