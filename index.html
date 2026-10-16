@@ -102,6 +102,24 @@ body{background:radial-gradient(1100px 520px at 100% -8%,#CFE2FF 0%,rgba(207,226
 .cnt{color:var(--sub);font-size:13.5px;margin:0 4px 8px}
 /* 마우스로 쓰는 PC: 옆으로 밀 수 없으니 여러 줄로 펼침 */
 @media (hover:hover) and (pointer:fine){.hot,.chips{flex-wrap:wrap;overflow:visible;margin-left:0;margin-right:0;padding-left:0;padding-right:0}}
+.intro{background:#fff;border-radius:26px;padding:24px;box-shadow:0 8px 28px rgba(25,31,40,.07);margin-bottom:14px;position:relative;overflow:hidden}
+.intro::before{content:'';position:absolute;inset:0 0 auto 0;height:86px;background:var(--brand-bg,#E8F3FF)}
+.intro .logo{position:relative;width:72px;height:72px;border-radius:22px;background:#fff;box-shadow:0 6px 18px rgba(25,31,40,.12);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:18px 0 14px;font-size:28px;font-weight:800;color:#fff}
+.intro .logo img{width:100%;height:100%;object-fit:contain;background:#fff}
+.intro h1{position:relative;margin:0 0 6px}
+.intro .one{color:var(--ink2);font-weight:600;margin:0}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.pills span{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--bg);color:var(--ink2)}
+.pills .hotp{background:#FFEEEF;color:var(--red)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.facts div{background:#fff;border-radius:18px;padding:14px 12px}
+.facts small{display:block;color:var(--sub);font-size:12.5px;font-weight:600}
+.facts b{display:block;font-size:16px;margin-top:2px;word-break:keep-all}
+.info{background:#fff;border-radius:22px;padding:20px;margin-bottom:10px}
+.info h3{margin:0 0 8px;font-size:16px;display:flex;align-items:center;gap:8px}
+.info h3 i{font-style:normal;width:28px;height:28px;border-radius:10px;background:var(--pri-bg);display:flex;align-items:center;justify-content:center;font-size:14px}
+.info p{margin:0;white-space:pre-line;color:var(--ink2)}
+.info .none{color:var(--sub)}
 .site-foot{margin-top:34px;padding-top:18px;border-top:1px solid #DDE2E7;color:var(--sub);font-size:12.5px;line-height:1.7}</style>
 </head>
 <body>
@@ -201,7 +219,28 @@ function drawList() {
   $('#r2').onchange = e => { S1.구군 = e.target.value; drawList(); };
   el.querySelectorAll('.rowi').forEach(b => b.onclick = () => { F.브랜드 = b.dataset.b; F.매장코드 = b.dataset.c; F.시도 = ''; F.구군 = ''; F.바로 = true; step3(); });
 }
-function pickBrand(name) { if (F.브랜드 !== name) Object.assign(F, { 시도:'', 구군:'', 매장코드:'' }); F.브랜드 = name; F.바로 = false; step2(); }
+function pickBrand(name) { if (F.브랜드 !== name) Object.assign(F, { 시도:'', 구군:'', 매장코드:'' }); F.브랜드 = name; F.바로 = false; stepIntro(); }
+
+/* 브랜드 소개 (아리 고객사 화면에서 입력한 내용) */
+function stepIntro() {
+  F.단계 = 1; $('#steps').hidden = true; window.scrollTo(0, 0);
+  const b = brand(), c = color(b.이름);
+  const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
+  const 뽑는매장 = b.매장.filter(m => m.채용중).length;
+  const sec = (아이콘, 제목, 내용, 빈말) => `<div class="info"><h3><i>${아이콘}</i>${제목}</h3>${내용 ? `<p>${esc(내용)}</p>` : `<p class="none">${빈말}</p>`}</div>`;
+  $('#view').innerHTML = `
+    <div class="intro" style="--brand-bg:${c}22">
+      <div class="logo" style="background:${c}">${esc(b.이름.slice(0, 1))}${b.로고 ? `<img src="${esc(b.로고)}" alt="${esc(b.이름)} 로고" style="position:absolute;inset:0" onerror="this.remove()">` : ''}</div>
+      <h1>${esc(b.이름)}</h1>
+      ${b.한줄소개 ? `<p class="one">${esc(b.한줄소개)}</p>` : ''}
+      <div class="pills">${b.구분 ? `<span>${esc(b.구분)}</span>` : ''}${b.채용중 ? '<span class="hotp">🔥 지금 채용중</span>' : ''}</div>
+    </div>
+    <div class="facts"><div><small>매장</small><b>${b.매장.length}곳</b></div><div><small>지역</small><b>${esc(지역.slice(0, 2).join(' · ') || '-')}${지역.length > 2 ? ' 외' : ''}</b></div><div><small>채용중 매장</small><b>${뽑는매장}곳</b></div></div>
+    ${sec('🏷️', '브랜드 소개', b.소개, '지원하시면 담당자가 자세히 안내해 드려요.')}
+    ${sec('🕒', '근무 형태', b.근무형태, '매장마다 달라요. 지원 후 안내해 드려요.')}
+    ${sec('⭐', '이런 분이면 좋아요', b.우대사항, '처음이어도 괜찮아요. 누구나 지원할 수 있어요.')}`;
+  foot(step2, '이 브랜드에 지원하기', step1);
+}
 
 /* 2. 지역 · 매장 */
 function step2() {
@@ -219,7 +258,7 @@ function step2() {
   $('#sido').onchange = e => { F.시도 = e.target.value; F.구군 = ''; F.매장코드 = ''; step2(); };
   $('#gugun').onchange = e => { F.구군 = e.target.value; F.매장코드 = ''; step2(); };
   document.querySelectorAll('.store').forEach(el => el.onclick = () => { F.매장코드 = el.dataset.c; step2(); });
-  foot(step3, '다음', step1);
+  foot(step3, '다음', stepIntro);
 }
 
 /* 3. 지원서 */
