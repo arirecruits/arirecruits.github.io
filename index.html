@@ -57,7 +57,28 @@ label span{color:var(--red)}
 .no{display:inline-block;background:#fff;border-radius:14px;padding:12px 20px;font-size:20px;font-weight:800;margin:18px 0 8px;letter-spacing:1px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .empty{background:#fff;border-radius:16px;padding:22px;text-align:center;color:var(--sub)}
-</style>
+/* 첫 화면 꾸미기 */
+body{background:radial-gradient(1100px 520px at 100% -8%,#CFE2FF 0%,rgba(207,226,255,0) 62%),radial-gradient(800px 420px at -12% 18%,#E6DEFF 0%,rgba(230,222,255,0) 58%),var(--bg);background-attachment:fixed}
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:30px 24px 26px;color:#fff;background:linear-gradient(135deg,#2B6CF0 0%,#4F8BFF 55%,#7C5CFA 100%);box-shadow:0 18px 40px rgba(49,130,246,.28);margin-bottom:18px}
+.hero::before,.hero::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.14)}
+.hero::before{width:220px;height:220px;right:-70px;top:-80px}
+.hero::after{width:140px;height:140px;right:40px;bottom:-70px;background:rgba(255,255,255,.10)}
+.hero .tag{display:inline-block;background:rgba(255,255,255,.2);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:14px}
+.hero h1{font-size:28px;color:#fff;margin:0 0 10px;position:relative}
+.hero p{margin:0;opacity:.9;position:relative}
+.hero svg{position:absolute;right:16px;top:16px;width:70px;height:70px;opacity:.95}
+.stats{display:flex;gap:8px;margin-top:22px;position:relative}
+.stats div{flex:1;background:rgba(255,255,255,.16);border-radius:16px;padding:12px}
+.stats b{display:block;font-size:22px}
+.stats small{opacity:.85;font-size:12.5px;font-weight:600}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:26px}
+.how div{background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-radius:18px;padding:14px 12px;font-size:13.5px;font-weight:700;color:var(--ink2)}
+.how i{display:flex;width:28px;height:28px;border-radius:10px;background:var(--pri-bg);color:var(--pri);font-style:normal;align-items:center;justify-content:center;margin-bottom:8px;font-weight:800}
+.how small{display:block;color:var(--sub);font-weight:500;margin-top:2px;font-size:12.5px}
+.sect{font-size:19px;font-weight:800;margin:0 0 12px}
+.brand{box-shadow:0 4px 16px rgba(25,31,40,.05)}
+.brand .regions{color:var(--sub);font-size:12.5px;font-weight:500;margin-top:2px}
+.site-foot{margin-top:34px;padding-top:18px;border-top:1px solid #DDE2E7;color:var(--sub);font-size:12.5px;line-height:1.7}</style>
 </head>
 <body>
 <div class="wrap">
@@ -96,17 +117,29 @@ const brand = () => BRANDS.find(b => b.이름 === F.브랜드);
 
 /* 1. 브랜드 */
 function step1() {
-  F.단계 = 1; steps(); window.scrollTo(0, 0);
-  $('#view').innerHTML = `<h1>어느 브랜드에<br>지원하시나요?</h1><p class="lead">일하고 싶은 브랜드를 골라 주세요</p>
-    <div class="grid">${BRANDS.map(b => `<button class="brand ${F.브랜드 === b.이름 ? 'on' : ''}" data-b="${esc(b.이름)}">
-      <div class="av" style="background:${color(b.이름)}">${esc(b.이름.slice(0, 1))}</div><div>${esc(b.이름)}<br><small>매장 ${b.매장.length}곳</small></div></button>`).join('')}</div>`;
+  F.단계 = 1; steps(); window.scrollTo(0, 0); $('#steps').hidden = true;
+  const 매장수 = BRANDS.reduce((n, b) => n + b.매장.length, 0);
+  const 지역수 = new Set(BRANDS.flatMap(b => b.매장.map(m => m.시도).filter(Boolean))).size;
+  $('#view').innerHTML = `
+    <section class="hero">
+      <svg viewBox="0 0 96 96" fill="none" aria-hidden="true"><rect x="14" y="30" width="68" height="50" rx="12" fill="rgba(255,255,255,.95)"/><path d="M36 30v-6a6 6 0 0 1 6-6h12a6 6 0 0 1 6 6v6" stroke="#fff" stroke-width="5" stroke-linecap="round"/><rect x="14" y="48" width="68" height="6" fill="#D6E4FF"/><rect x="42" y="44" width="12" height="14" rx="3" fill="#3182F6"/><circle cx="78" cy="22" r="7" fill="#FFD66B"/></svg>
+      <span class="tag">아리오 채용</span>
+      <h1>매장에서 함께 일할<br>동료를 찾고 있어요</h1>
+      <p>브랜드를 고르고 3분이면 지원 끝!<br>담당자가 직접 연락드려요</p>
+      <div class="stats"><div><b>${BRANDS.length}</b><small>브랜드</small></div><div><b>${매장수}</b><small>매장</small></div><div><b>${지역수 || '-'}</b><small>지역</small></div></div>
+    </section>
+    <div class="how"><div><i>1</i>브랜드 고르기<small>일하고 싶은 곳</small></div><div><i>2</i>지원서 작성<small>3분이면 끝</small></div><div><i>3</i>담당자 연락<small>면접 안내</small></div></div>
+    <div class="sect">어느 브랜드에 지원하시나요?</div>
+    <div class="grid">${BRANDS.map(b => { const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
+      return `<button class="brand ${F.브랜드 === b.이름 ? 'on' : ''}" data-b="${esc(b.이름)}">
+      <div class="av" style="background:${color(b.이름)}">${esc(b.이름.slice(0, 1))}</div><div>${esc(b.이름)}<br><small>매장 ${b.매장.length}곳</small>${지역.length ? `<div class="regions">${esc(지역.slice(0, 3).join(' · '))}${지역.length > 3 ? ' 외' : ''}</div>` : ''}</div></button>`; }).join('')}</div>
+    <div class="site-foot">주식회사 아리오씨오에스 · 입사지원<br>제출하신 정보는 채용 진행 목적으로만 사용됩니다.</div>`;
   document.querySelectorAll('.brand').forEach(el => el.onclick = () => { if (F.브랜드 !== el.dataset.b) Object.assign(F, { 시도:'', 구군:'', 매장코드:'' }); F.브랜드 = el.dataset.b; step2(); });
   foot(null);
 }
-
 /* 2. 지역 · 매장 */
 function step2() {
-  F.단계 = 2; steps(); window.scrollTo(0, 0);
+  F.단계 = 2; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
   const b = brand(), 시도들 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))].sort();
   const 구군들 = [...new Set(b.매장.filter(m => !F.시도 || m.시도 === F.시도).map(m => m.구군).filter(Boolean))].sort();
   const 매장들 = b.매장.filter(m => (!F.시도 || m.시도 === F.시도) && (!F.구군 || m.구군 === F.구군));
