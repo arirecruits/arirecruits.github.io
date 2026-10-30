@@ -277,8 +277,8 @@ function step2() {
 }
 
 /* 3. 지원서 — 문항 구성은 브랜드 온라인 지원서(구글폼)를 따름. 필수(*)는 여기서 검사, 서버는 형식 · 길이만 검사 */
-const Q = b => [
-  { sec:'1. 지원자 기본 정보' },
+const QALL = b => [
+  { sec:'지원자 기본 정보' },
   { k:'한줄소개', t:'한 줄 소개', ph:'예: 인근 거주 · 영어 가능 · 유사 업무 경력 있음', max:100 },
   { k:'이름', t:'성명', req:1, max:20, ac:'name' },
   { k:'생년월일', t:'생년월일', req:1, type:'date' },
@@ -286,28 +286,39 @@ const Q = b => [
   { k:'이메일', t:'이메일 주소', req:1, type:'email', max:100, ac:'email' },
   { k:'거주지', t:'현재 거주지 (시/구/동)', req:1, ph:'예: 서울시 용산구 이태원동', max:50 },
   { k:'성별', t:'성별', pick:FORM.성별 },
-  { mil:1 },
+  { mil:1, mod:'병역' },
   { k:'유선전화', t:'유선전화', type:'tel', max:20, ph:'선택' },
-  { sec:'2. 지원 분야 및 근무 형태' },
+  { sec:'지원 분야 및 근무 형태' },
   { k:'근무형태', t:'근무 형태', req:1, pick:FORM.근무형태 },
   { k:'근무기간', t:'근무 가능 기간', req:1, pick:FORM.근무기간 },
   { k:'면접가능일', t:'면접 가능 일자', req:1, type:'date' },
   { k:'근무시작일', t:'근무 시작 가능 일자', req:1, type:'date' },
-  { sec:'3. 최종 학력 및 경력 사항' },
-  { edu:1 },
-  { car:1 },
+  { sec:'최종 학력 및 경력 사항' },
+  { edu:1, mod:'학력', req:1 },
+  { car:1, mod:'경력', req:1 },
   { k:'이전직장', t:'이전 직장 경험을 간략히 설명해 주세요 (가장 최근 2개 이내)', area:1, max:1000 },
-  { sec:'4. 자기소개 및 역량' },
+  { sec:'자기소개 및 역량' },
   { k:'자기소개', t:'자기소개 및 역량', area:1, max:1500, ph:'근무 가능한 요일 · 시간도 적어 주시면 좋아요' },
   { k:'지원동기', t:`${b}에 지원하게 된 동기는 무엇인가요?`, req:1, area:1, max:1500 },
   { k:'강점', t:'본인의 강점과 멤버로서 기여할 수 있는 부분 (판매, 고객 서비스, 팀워크 등)', req:1, area:1, max:1000 },
   { k:'서비스역량', t:'고객 서비스 역량 (1점 매우 미흡 ~ 5점 매우 우수)', req:1, pick:FORM.점수 },
   { k:'브랜드이해도', t:`${b} 브랜드에 대한 이해도 (1~5)`, pick:FORM.점수 },
-  { talent:1 },
-  { sec:'5. 포트폴리오' },
+  { talent:1, mod:'어학특기' },
+  { sec:'포트폴리오' },
   { k:'포트폴리오', t:'포트폴리오 (SNS 링크)', type:'url', ph:'https://', max:300 },
-  { photo:1 },
+  { photo:1, mod:'사진' },
 ];
+/* 브랜드별 지원서 항목 (아리 고객사 화면에서 담당자가 정함): 끈 문항 빼고, 필수 바꾸고, 브랜드 추가 질문을 맨 뒤에 */
+const FIXED = ['이름', '생년월일', '연락처'];
+function Q(b) {
+  const c = (brand() || {}).지원서 || {}, 끔 = c.끔 || [], 필수 = c.필수 || {}, key = q => q.k || q.mod;
+  let l = QALL(b).filter(q => q.sec || FIXED.indexOf(key(q)) >= 0 || 끔.indexOf(key(q)) < 0)
+    .map(q => !q.sec && FIXED.indexOf(key(q)) < 0 && 필수[key(q)] != null ? Object.assign({}, q, { req:필수[key(q)] }) : q);
+  const 추가 = (c.추가 || []).map(x => ({ k:'추가_' + x.id, id:x.id, t:x.t, req:x.필수, area: x.형식 === '긴글' ? 1 : 0, max:1000, pick: x.형식 === '선택' ? x.보기 : null }));
+  if (추가.length) l = l.concat([{ sec:'브랜드 추가 질문' }], 추가);
+  let n = 0;
+  return l.filter((q, i) => !q.sec || (l[i + 1] && !l[i + 1].sec)).map(q => q.sec ? { sec: ++n + '. ' + q.sec } : q);
+}
 function step3() {
   F.단계 = 3; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
@@ -320,12 +331,12 @@ function step3() {
           `<input id="병역_${k}" maxlength="40" placeholder="${ph}" value="${esc(F.병역[k])}" style="margin-top:8px">`).join('')}</div>`
     : q.talent ? (ITEMS.언어.length ? `<label>어학 능력 (고객응대 · 소통 가능한 수준만)</label>${pk('언어', ITEMS.언어, x => F.언어.indexOf(x) >= 0)}` : '')
                + (ITEMS.특기.length ? `<label>해당하는 것을 모두 골라 주세요</label>${pk('특기', ITEMS.특기, x => F.특기.indexOf(x) >= 0)}` : '')
-    : q.edu ? `<label>학력 사항 <span>*</span></label><div class="lead" style="font-size:13px;margin:0 0 4px">최종 학력까지 적어 주세요</div>` + F.학력표.map((e, i) => `<div class="trow"><b>${e.구분}</b>
+    : q.edu ? `<label>학력 사항${q.req ? ' <span>*</span>' : ''}</label><div class="lead" style="font-size:13px;margin:0 0 4px">최종 학력까지 적어 주세요</div>` + F.학력표.map((e, i) => `<div class="trow"><b>${e.구분}</b>
         <input id="학_학교명${i}" maxlength="100" placeholder="학교명" value="${esc(e.학교명)}">
         <div class="row2"><input id="학_기간${i}" maxlength="40" placeholder="재학 기간 (예: 2015.03 ~ 2018.02)" value="${esc(e.기간)}">
         <select id="학_수학${i}">${['', ...FORM.수학].map(x => `<option value="${x}" ${x === e.수학 ? 'selected' : ''}>${x || '졸업 여부'}</option>`).join('')}</select></div>
         ${i ? `<input id="학_전공${i}" maxlength="100" placeholder="전공" value="${esc(e.전공)}">` : ''}</div>`).join('')
-    : q.car ? `<label>경력 사항 <span>*</span></label><div id="w경력">${carHtml()}</div>`
+    : q.car ? `<label>경력 사항${q.req ? ' <span>*</span>' : ''}</label><div id="w경력">${carHtml()}</div>`
     : q.photo ? `<label>이력서 사진 (얼굴 정면 사진)</label><input id="사진" type="file" accept="image/jpeg,image/png"><div class="lead" id="사진안내" style="font-size:13px;margin:4px 0 0">${F.사진 ? '사진이 첨부됐어요' : '선택'}</div>`
     : q.pick ? lab(q) + pk(q.k, q.pick, x => F[q.k] === x)
     : lab(q) + (q.area ? `<textarea id="${q.k}" maxlength="${q.max}" placeholder="${esc(q.ph || '')}">${esc(F[q.k])}</textarea>`
@@ -357,11 +368,11 @@ function step3() {
   // 하나만 고르는 버튼 (다시 누르면 해제) / 여러 개 고르는 버튼
   const one = (id, get, set, after) => { const box = $('#p' + id); if (box) box.querySelectorAll('button').forEach(x => x.onclick = () => { set(get() === x.dataset.v ? '' : x.dataset.v);
     box.querySelectorAll('button').forEach(y => y.classList.toggle('on', y.dataset.v === get())); if (after) after(); }); };
-  Q(b.이름).filter(q => q.pick).forEach(q => one(q.k, () => F[q.k], v => F[q.k] = v, q.k === '성별' ? () => $('#w병역').hidden = F.성별 !== '남성' : null));
+  Q(b.이름).filter(q => q.pick).forEach(q => one(q.k, () => F[q.k], v => F[q.k] = v, q.k === '성별' ? () => { if ($('#w병역')) $('#w병역').hidden = F.성별 !== '남성'; } : null));
   one('군별', () => F.병역.군별, v => F.병역.군별 = v);
   ['언어', '특기'].forEach(k => { const box = $('#p' + k); if (box) box.querySelectorAll('button').forEach(x => x.onclick = () => {
     const v = x.dataset.v, i = F[k].indexOf(v); i >= 0 ? F[k].splice(i, 1) : F[k].push(v); x.classList.toggle('on', i < 0); }); });
-  $('#사진').onchange = e => { const f = e.target.files[0]; if (!f) return;
+  if ($('#사진')) $('#사진').onchange = e => { const f = e.target.files[0]; if (!f) return;
     const img = new Image(); img.onload = () => {   // 서버에 보내기 전에 줄임 (가로세로 600px 이하 JPG)
       const k = Math.min(1, 600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
@@ -386,31 +397,33 @@ function keepCar() { if (!$('#경_회사0')) return; F.경력표.forEach((c, i) 
 function carAdd() { keepCar(); F.경력표.push({}); $('#w경력').innerHTML = carHtml(); }
 function carDel(i) { keepCar(); F.경력표.splice(i, 1); $('#w경력').innerHTML = carHtml(); }
 function keep() {
-  F.학력표.forEach((e, i) => ['학교명', '기간', '수학'].concat(i ? ['전공'] : []).forEach(k => e[k] = $('#학_' + k + i).value));
-  keepCar(); F.무경력 = $('#무경력').checked;
+  if ($('#학_학교명0')) F.학력표.forEach((e, i) => ['학교명', '기간', '수학'].concat(i ? ['전공'] : []).forEach(k => e[k] = $('#학_' + k + i).value));
+  keepCar(); if ($('#무경력')) F.무경력 = $('#무경력').checked;
   Q('').filter(q => q.k && !q.pick).forEach(q => F[q.k] = $('#' + q.k).value);
+  if ($('#병역_병과'))
   ['병과', '계급', '기간', '면제사유'].forEach(k => F.병역[k] = $('#병역_' + k).value);
   F.동의 = $('#동의').checked; F.동의3 = $('#동의3').checked; F.인재풀 = $('#인재풀').checked;
 }
 async function submit() {
   keep();
   const err = m => { $('#err').textContent = m; };
-  const miss = Q(brand().이름).find(q => q.req && !String(F[q.k] || '').trim());
+  const miss = Q(brand().이름).find(q => q.k && q.req && !String(F[q.k] || '').trim());
   if (miss) return err(miss.t.replace(/\s*\(.*$/, '') + ' 항목을 입력해 주세요.');
-  if (!F.학력표.some(e => e.학교명.trim())) return err('학력 사항을 입력해 주세요.');
-  if (!F.무경력 && !F.경력표.some(c => String(c.회사 || '').trim())) return err('경력 사항을 입력하거나 "경력이 없어요"를 골라 주세요.');
+  const 문항 = Q(brand().이름), 필요 = m => 문항.some(q => q.mod === m && q.req);
+  if (필요('학력') && !F.학력표.some(e => e.학교명.trim())) return err('학력 사항을 입력해 주세요.');
+  if (필요('경력') && !F.무경력 && !F.경력표.some(c => String(c.회사 || '').trim())) return err('경력 사항을 입력하거나 "경력이 없어요"를 골라 주세요.');
   if (!/^01\d{8,9}$/.test(F.연락처.replace(/\D/g, ''))) return err('휴대폰 번호를 확인해 주세요.');
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.이메일.trim())) return err('이메일을 확인해 주세요.');
-  if (F.포트폴리오.trim() && !/^https?:\/\/\S+$/.test(F.포트폴리오.trim())) return err('포트폴리오 링크는 https:// 로 시작하게 적어 주세요.');
+  if (String(F.이메일 || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.이메일.trim())) return err('이메일을 확인해 주세요.');
+  if (String(F.포트폴리오 || '').trim() && !/^https?:\/\/\S+$/.test(F.포트폴리오.trim())) return err('포트폴리오 링크는 https:// 로 시작하게 적어 주세요.');
   if (!F.동의) return err('개인정보 수집 · 이용에 동의해 주세요.');
   if (!F.동의3) return err('개인정보 제3자 제공에 동의해 주세요.');
   $('#next').disabled = true; $('#next').textContent = '보내는 중…';
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
-  const 답 = {}; Q('').filter(q => q.k).forEach(q => 답[q.k] = String(F[q.k] || '').trim());
+  const 답 = {}, 추가답변 = {}; Q('').filter(q => q.k).forEach(q => { const v = String(F[q.k] || '').trim(); q.id ? 추가답변[q.id] = v : 답[q.k] = v; });
   const r = await call(Object.assign(답, { action:'지원접수', 브랜드:F.브랜드, 매장코드:F.매장코드, 시도: m ? m.시도 : F.시도, 구군: m ? m.구군 : F.구군,
     개인정보동의:'Y', 제3자동의:'Y', 가능언어:F.언어, 특기:F.특기, 인재풀동의: F.인재풀 ? 'Y' : '',
     병역: F.성별 === '남성' ? F.병역 : {}, 사진:F.사진,
-    학력표:F.학력표, 경력표: F.무경력 ? [] : F.경력표, 무경력: F.무경력 ? 'Y' : '', 웹사이트:$('#웹사이트').value }))
+    추가답변, 학력표:F.학력표, 경력표: F.무경력 ? [] : F.경력표, 무경력: F.무경력 ? 'Y' : '', 웹사이트:$('#웹사이트').value }))
     .catch(() => ({ error:'인터넷 연결을 확인하고 다시 시도해 주세요.' }));
   if (!r.success) { $('#next').disabled = false; $('#next').textContent = '지원하기'; return err(r.error || '접수하지 못했어요. 다시 시도해 주세요.'); }
   done(r.접수번호, m);

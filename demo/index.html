@@ -140,6 +140,36 @@ body{background:radial-gradient(1100px 520px at 100% -8%,#CFE2FF 0%,rgba(207,226
 <div class="foot" id="foot" hidden><div><button class="back" id="back">이전</button><button class="pri big" id="next">다음</button></div></div>
 
 <script>
+/* 미리보기 전용: 서버에 연결하지 않음 — 브랜드가 많은 상황을 흉내 냄 */
+(() => {
+  const 브랜드들 = [
+    ['탑텐','의류',3],['폴햄','의류',0],['지오다노','의류',1],['스파오','의류',0],['에잇세컨즈','의류',2],['유니클로','의류',0],['자라','의류',0],['미쏘','의류',1],
+    ['올리브영','화장품',4],['아리따움','화장품',0],['이니스프리','화장품',0],['토니모리','화장품',1],
+    ['스타벅스','식음료',0],['투썸플레이스','식음료',2],['파리바게뜨','식음료',0],['배스킨라빈스','식음료',0],['메가커피','식음료',1],
+    ['이마트','유통',0],['홈플러스','유통',1],['롯데마트','유통',0],['다이소','유통',3],
+    ['나이키','스포츠',0],['아디다스','스포츠',1],['뉴발란스','스포츠',0]];
+  const 지역 = [['서울','강남구'],['서울','마포구'],['서울','송파구'],['경기','수원시'],['경기','파주시'],['경기','성남시'],['인천','연수구'],['대전','서구'],['부산','해운대구'],['대구','수성구']];
+  // 시연용 예시 문구 (실제 브랜드 정보가 아님)
+  const 예시 = {
+    의류: { 한줄소개:'매장에서 고객의 스타일을 함께 찾는 패션 매장', 소개:'고객 응대와 상품 진열, 피팅룸 안내, 재고 정리를 함께 해요.\n처음이어도 매장에서 하나씩 알려 드려요.', 근무형태:'주 5일 · 오전/오후 교대\n주말 근무 있음 (평일 대체 휴무)', 우대사항:'의류 · 판매 경험\n외국어 가능 (관광 상권 매장)' },
+    화장품: { 한줄소개:'피부 고민을 듣고 제품을 추천하는 뷰티 매장', 소개:'고객 상담과 제품 추천, 진열 · 재고 관리를 맡아요.\n제품 교육을 정기적으로 받아요.', 근무형태:'주 5일 · 교대 근무', 우대사항:'뷰티 관심 많은 분\n외국어 가능' },
+    식음료: { 한줄소개:'따뜻한 한 잔과 친절한 응대가 있는 매장', 소개:'주문 응대, 음료 · 메뉴 준비, 매장 청결 관리를 해요.', 근무형태:'주 3~5일 · 시간 협의 가능', 우대사항:'카페 · 음식점 경험\n오전 근무 가능' },
+    유통: { 한줄소개:'생활에 필요한 모든 것이 있는 대형 매장', 소개:'계산 · 상품 진열 · 고객 안내를 맡아요.', 근무형태:'주 5일 · 교대 근무', 우대사항:'유통 · 계산 경험' },
+    스포츠: { 한줄소개:'운동을 좋아하는 사람들이 모이는 스포츠 매장', 소개:'운동화 · 의류 상담과 사이즈 안내, 진열을 해요.', 근무형태:'주 5일 · 주말 근무 있음', 우대사항:'운동 좋아하는 분\n신발 · 의류 판매 경험' } };
+  let n = 0;
+  const data = 브랜드들.map(([이름, 구분, 뽑음], bi) => Object.assign({ 이름, 구분, 채용중: 뽑음 }, 예시[구분] || {}, {
+    매장: Array.from({ length: 2 + (bi % 4) }, (_, k) => { const [시도, 구군] = 지역[(bi * 3 + k) % 지역.length]; n++;
+      return { 매장코드: 'S' + String(n).padStart(4, '0'), 매장: 이름 + ' ' + 구군.replace(/(구|시)$/, '') + '점', 시도, 구군, 채용중: k < 뽑음 }; }) }));
+  data[0].지원서 = { 끔:['병역', '유선전화', '포트폴리오'], 필수:{}, 추가:[{ id:'q1', t:'희망 포지션', 형식:'선택', 보기:['판매', '매니저', 'VMD'], 필수:1 }, { id:'q2', t:'외국인 고객 응대 경험이 있다면 적어 주세요', 형식:'긴글', 필수:0 }] };   // 시연: 첫 브랜드는 담당자가 지원서 항목을 바꾼 예
+  window.APPLY_DEMO = async b => {
+    await new Promise(r => setTimeout(r, 250));
+    if (b.action === '지원안내') return { success:true, 브랜드: data, 항목: { 언어:['영어', '중국어', '일본어', '베트남어', '기타 외국어'],
+      특기:['판매 경험', '매니저 경험', 'VMD · 진열', '재고 관리', '계산 · POS', '주말 가능', '야간 가능', '장기 근무 가능'] } };
+    if (b.action === '지원접수') return { success:true, 접수번호:'A26-00012' };
+  };
+})();
+</script>
+<script>
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwCJKmefauAr4UI5-bEt4VcvoP5kQH8Eo2hMf3bo8PN5c8N4TmEYPpMYGFJblNU6xo/exec";
 const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAmoklEQVR4nO19eXwVx5XuV1Xdd9PVxiJAElowoB0QGNAGQtgGjJc4ceQlnkwSvzjJvExskslknj1JFOK8yWTieZl58STxJJnnsbM4lnfwImOMZWMjs9ksYjOLzY4ALVfLXbqrzvujb1/tQgitWN/v175Y3V1dVefUOadOnToFjGMc4/j0go10BUYAl2ozDUstRgmuVgZgQDlHaZ3VvoQEQmUlARUA1qpLvMut5/ax7u/Dvq4aXA0M0E5si1AKfRApuaDAzVs1F+OCSEkGAPa/tVa/Onp0R1PfnysX/f3WWMBYZQCG8nIOAKislF1vTp1XMlkLyiwFzORCTCepUrngaUREjGEWY9xr0a1z84lIgqiWGFNQqoEY2wMpGyH4LoI4fLp26mmg6/fCDFFdrQBcSrqMOowlBuiZ6OXlIrn27AJiqgjAHM5YDoAMIUQsGAPAIKWEYZpgAILBIKTsxjPWBxiDy+UCYwxCCGiaBnuAK1O2KdAnpNQBYrQTSmwJKrX14sH3mttLqOAofYujulpijEiGscAAFuE7EH3CzEUxTl0r45zdxhlbzDnP4lxASomQYSAQCMAIGYoxkNAEuZxOTJwQx6RUuCY9hUV5PD22WyqFQ4ePKiklWlrb0ORrJiLANE3ucDi40+mEw+GwGIMUpClPEqmtAF9PQmw4taf6ZKSw8nIRthtGtVQYzQzAUV7ObMLPnLnK2ebwrWSM3cYZu0EILZkABPx+tPn9JKWU3igPpiRMYjPTU3lO5iyWlpKM2TPTEe31Ij01GUSEuNiYPj/qa24BEaHu/EWcOVeHc3UX8NHRj1G7/yM6dOQYnTlXR02+ZgIYd7lc3ONxg3MBaZo+RWoTY+zFEIxX6va+fy5cpGWjdFMdowOjkQE6ET4przSZSfk/wHCXpmmZANDS2gq/3690XVPpqdP5vLxsvnjBXCxeMBcz0lIQE+3ttXAiAlHv0plz3us9vz+A46fOYMeHe/D+9g+xc3etOvjRUWrzB+BwOES01wshBAzDOAfQS8TYo6f2bt4daRfK2WhjhNHEAJ1EfXJmYS4J/h3O+O1C02KCwSBampsVY0zlZWfwldct5ctKFiM/Lxteb1SnghQRlFLhQhkYs/Q70P7bG2zmsBgFAKxfzlk35jClxO7aA6jZ/iFefX0T1Wzfpdr8fni9UcLj9kApKaWiNxWjn5/Z++6G8Gt2IaNCNYwGBuhOeMa/wzV2jxC6o6W5GYFAQE5JmMRuvH4Zv2llGcqWFMDpcEQKkEqBiMAZAwtfQwFbethMIoTodH/bB7vxyoa38MLLG+jIseNKCC5iYmLAwGBKuaETI1g2wohPI0eYASq47ZhJnlWQRJp4mAl2j6bpjmafDyEjJHOzMvjnbl7BvlD+GSROTYi8KaUEGIsQfSRABBCFmY/zSD1aWtuw7rWN+MNfXqD3d+5ShmGy+Lg4TiBIqTZA4Qen9m9+H4DNCCOmFkaOAUpLNVRXm1iwQE/2O78Bxr+vO/SE1tZWtLW1yfw5ufxv7v0Cu/2WVXA4dACAlNaA6djZowkqLIk6Sobqd9/Ho799Ehvffk8CYLGxsVya0lBS/cbU1U/O7d5SFx4IV52XsTdwVFRwAEjKKlmcnFNckzZvGSVlF5EnMduYU7Ja/emZlygUMsiGaZqklKKxAqVUtzq/tbmGVn3+K+RJzDanzF5E6fPKKCmn5FRyTuFdkZ4pLxe99tpVgQ4NTMwuqkjOKTHS5i2j2JS5ZlJ2kfrpL35NFy7WRzrNNE0aO2TvGVJKklISEZFhmvSnZ16iOSWrVVRSjjE9t4RS55ZSUnbxnxMzF04EYEnGqxLhhqVkLpmWmFX0Wtq8MpqWWUBRSTnmnffeTwc+OhrpNNM0R4peQwYzzARERBcuNtCDP36EJsyYrybOWGCm5y+nxJziQ9NyCooBICwhR5+OGyCYpeOA5JzClUk5xafT85dTXOo8I3XOUvW7J59u76QxJuoHgo7MvemdGlp8/ecoKjHHSJu7jJJzSoyknOI1Hfqud6fEGAG3xX5STvGa6XlLKHXOUvIk5pjLbvkC7dl3kIg6i8lPA5RSZBgWIzQ0NtFX73+QPIk5Mim7SKXOLaOk7JLfT8woigYwpu2CCPcmZhX+Z+q8MkrMKjSjp8+Rax58mFpa24iIIh3xaURHafDY43+mqbMXq8kzrzXS5pVRYlbx1pS8kngAY5EJLJE/MaMoOim76Pdp88poyuxFoYRZC9UTTz0XafSnadT3BmvGYPXDtp27KadwFcWlzQ2lzyujpOzirUlZi2cBGDImGAJDw3LupOSVxJumqnK6XAt9TY1mfHyc9uff/huuzc+DlAqcj5wDZzRCSgkhBM5fuIgvfuO7eLdmu5ycMFmEQqF6BrXqZO2WbRHfySBisCnAAVjEl1TldDgWNjTUG5MmTdSf/e//wJycTJimhKaNNYk2PLCZoMnXjDvvvR9vv/u+nDIlQRiGbGBMrjxZu2XbYHsOB9PK5EAFpi1Y4DFNVeV0OBaev3DeXLRgnr7huScwJycTUo4Tvy8IIaCUQmxMNJ594le478t3i7rz56WmiXgiUZWcUZCHyko5Gm0CFrH2swoft6Z5c0M3fO5LZAVVXJ1z+6GClO1T4b/7wU8pKinXTM8vo8Tsot0Rw3CQBu/gqICwWErMKvxPh9N1X4vPZ8bFxWpvvvQHTE+aNi72BwB7OZtzjlvu/ho2vf2eTEhIEMFgaJumsZXH92xuDD96ResHV85FpaUaKitlUmbBGt3pus/f1mbExcVqzz7xH5ieNA1SqnHiDwBW7AGDUgpP/uYRlBQuFA0N9YbT5VxomvK3AAilpSPcsWGxPy1z8Q3T85ZQYlahMXnmQrVz114iGhf7gwFbHTQ2+eja5bdRfHp+KG1eGU3LKvwRgCteO7gSFcABUHru4oSQErs0TUu4WN9Aj/3iJ/wLn791XOwPIqRUEIJjd+1B3HzXV2GapqnpumYaoRVnDry/4UpmBgNXAeXlDACCkj/pcDqnnD9/QX39y3ePE38IIASHaUrMycnAIw8/CF9zC+eMEefiyfTcxVPCkUUDouXAGCCs9xMzC37ocLpuaKhvMBddmy9+/NCa8Fx2zK9hjDpomoBpStxx22p84ytf4OfPX1AOp3NKUPInAZA9IIce4WCOxKzC/OTcJaFpmQVmSt4Stf/QkbDOGnfvDhVst3FrWxuV3XoPxafnW+sGmYXfBDAgd/HlDlWGtftYaWmpxhj7vaYJvcnnw8MPfZtlzpoB05R9hlWP48pgu849bjd++bMKOHRdGKGg5Jr4aUpeyQxUVip7gPYXl0etcmuDw0fnQl/XHc78+vp6ecuN14u/vuuz43p/mGDbAzmZs/APa77BGhuboOt6tGmaPwNA2LfvslTB5TzMAVBqdukUE8Y+gMUSKfbOK0+xGWkpUEqNj/5hAoVD06VSuO4zf4XaAx9JrzdakDRWnqh97/XLmRX0n2KWkUEmhf7Z4XTF1zc00Jq/+QqbkZYyLvqHGYwxEAG6puEn//gdKKkYA5FS9H9nzlzlRGV2963PvaB/VKuo4KisVIl5RRlMiLtaW1rUrBlp/L4v3hEOgx4n/nBDCA4pFZYWLcLqFWW8oaFR6U5XRpuj8S5grYrspL4E+kc5S68QTHpI13Rna1srff/v/5bFxcVCKTW+rj9CsLv9xw+ugTc6ipmGQQzswcuRApdmAGv0y8S8ogyhaXf6fD41f14u/8yN14f1/rjhN1LgnENKiWvSU3DnbTfx+oYG5XBcnhS4NAPYVqVJD2lCcwZDQbr/vi8xh0MHEWF88I8sLHuA8M2vfhET4mOZEZYCyQUFblQ+rXAJKXApBmCorJTpuYunCC5ub25uprycTH7rjdeH98ONj/6RBuccSilck56C225awRsaG5XucGVQEy8DGF1KCvTNAOGXDSW+rul6VJvfr8o/s5o5HHpY9w9iS8ZxBbCkwN233wKX0wGlFIHhOwAQtgX6ePMS95ILClzk43uJMMPtcqiaDc/ySRMnhMX/OAeMFth+mFvuvg+ba3ZQTLRXkqnmndj/bi0qwLG253wEvUsAa/QTtbDluu6Y4WtuVqtXLOOTJk6AlOOW/2iDUtZAv/v2W2CYhuRC0xToKwCAt0p7pfOljUCJcjAQY1C3rb5hkKo7jsGG7YtZUVaCqQmTeCgYBBi7OTs72xHOWtYjemMAhspKmZFRFM0EX9nS0srm5GSKokULIskQxjG6wBiDlAqTJk7Ajdcv477mZqXp2qwmFT8f1nJxjxZ7z5QMG38tOi3VNH2q3+9Xq28oYy6XMyz+h64hvYE6pGfp7RpNGMm6fu7mFRCCK4BxcLodAFBX1yPV+h7KEp8nAjRNqLKSxQAunWRpqMA65P/p7RpNGIm6cm6VO39uLhKnJvBQMAgGdktfaqDngMLKSjVz5ipngPuKAn4/ZqRO5zlZszt9ZLjR3NIaCZXuCYyxPtPDDSeICM0trT2OdCKCw+GAx+0a9O8yZkURx0R7sXD+XP7CyxsoLi42vUHFzgBwoGNOJhvdGaCigmPtWhV0+fIE12Y2+Vpo/rxcHhPtjQQnDhdkeGqzfedu3H3fGriczh47lTOGVr8fT/z6ERQvvhZKyW4ZvIYD9tTY19yClbd/GQ1NPuia1imrWGOTD3d97ib8y9r/NST9qRRB0ziWFi3CMy++KoUQDmmaNwI4YKWxxSUY4K23OAClJBVpuuBSSrPg2nzNbuCwgixnROWLr+LkqbOYNDEeptldkmmawMX6Bjz9/MsoKbgWI+2hIiLUNzahvqGpGwM0NDaiubVtyL5tS+iF8/IQ5XEzaUowohIAv0B1QjcCdme/9ofypSnh9XqweP6cToUPB+xl5uaWVry+6R3ExcaAcw5d17pdnHPExcZi49tbUN/YBMH5iBuFuta9ntalQxtC6WTbFzOvSUNaSjILBIMA5znZ2dkO4OluOrQH+fO0QmmpxjifGzIMTJ08maelTu9U+HBAKQUCsOmdLTj28Qk4LRdnjxa1UgoOh47jJ09jw6bNACz1MZIYqVmAbQd43C7MnpnOAoEAOOfTGxA/FWCELjTvygAMYDSjITSBMTYjEAhgRnoK80Z5hn3dnzEGBuDZdVX9FulCCDy3rgqAZRcMNUbrFNT2CuZmzWamaSouhEeAZQNA1/DxzgwQnv8HFLtGCBFtGIbKzZrNLK4avkaqsLPp1OmzeOe9bYjyuKFUZ93flRmllIjyuLFl204c/fhEZJWsPyAimKYJ05RdLrPb2QJSqcjfRvMUFADmZGfa/gCQknMBdPMH9GiCcklZYJwDoGvSpg9xdbvDJtz61zeh7sJFOHQdXQeZYRjd3tM1DfUNTXjp1Tescvo5Mhlj0DQNmia6XFpkNmGPdMF55G8tLa3wNbcgGAwNtKlDApsfU5KnweNxMykliIclQBdDsPMsIMwdBKQQETRN0Oxr0sOFDh+X20bcCy9vgMPh6JGQt9+6CuurNsE0zUjdFBGcTifWvbYRf/u1v4a4hMvanrYdOnIMz62rgsvpjHyLMYZgMITU6Ym463M3R75R/e5WPLeuCnv2H0R9fSOkUnDoOp587F+RnTFzkHtiYLDrOj05EfGxsWhqboVgSLHuZvfBAAk2d7AUpRScTieL8rjDhQ5xrcOwlzV37d2Pnbtqw+I/nPqdMYRCBqZNmYwf/v23sHNXLQ4f+yTiH1BKIcrtwq7ag9jx4V4sXjC3z7m2UgpCCOzdfwgP/vCfER0XE85HbAVatDS3YknxItx9+y1o8jXjuz/4KZ556VWYpoTT4YDQBDhjaPMH0DKEU7uBgMI5i73eKFbf6IPQtYTkggL3yZofBYC1VownuqqAcPAA45hlmiYmT4jHjPRUAMMnAWyD6vn1r6O1ra0T8TjnaPP7UbRoPqYkTEJJwbXw+wOdRjrnHMFgEM+tr+r3N50OByZOnoTJkyZ0uiZOisfUhElobfPjznvvxx8qX0RMdDQmxsfB43HDoevQdR0ul2PEPKQ9wQ4T80Z5MDMtJTITUI3SE54JRNDz0CAEGGMwpez1gKWhgM21/kAAr75RDY/HHRmRHe/feuN1ICLcvGo5nF1UhFQKHrcbVRvfQXNLK4S4tE+gdyNQQimF71X8DNXvbsW0hMlQSkGFYyEjqkeOvpmAjZBhhOtJIVeU6pZhrCMDMGAtTcwoimacZwQCAVyTlsK8UVHDFv1ji/p3tmzHocPH4O7g+mWMIRAM4pq0FJQULgQYQ8GCuciYNQN+fyAyAokILpcTxz45jk3v1IA6lHu5dYnyuLH9wz14bt1rmDxpAqRSME37QKkWtLS0IhQyrJR3oyy1r91vedkZzDRNYozHhgIOa0GnoiJS2a4SgNxC6WAs1jRNREd7maaJ4ePuMJM9t67KcuR0YDrBOfz+AJYvLYQ3ygMjZMDpdOKGshL4AwFw1t2l8dy6KjAMXH0xxmAYJnRdh5QSDY1NiImOwuIFc7GirARFi+YjcWoCWtv8CPUwKxlJ2CSLj4sFERHjXFNKxAJAx/2D3dYCuNAIgMkYG1Zvmj3FqrtwEZve2dLJ+AMsC1/Xddyy6jrrD+Em3LyiDL/63R861VUpyyfw9patOHXmLJKmTbV8CwNgBM45DNMEZww/+ocHcNftNyFx6pTI/eaWVmz/YA9SpycNrOFDDNNsl/qMU58qoCNY5D/DBJuAr218G6fP1sHpcEQkD2cM/kAAGdekY/ECy59hLbIA+XOykZM5K6wGrOYQAQ5dR935i3i5ahOAgakBwDKVpZT47b//E77zzXsjxLfd0tHeKJQtKUDStCmj0g7oLP2oG0lHTWyXbck/v/51aB1W0ACAcQ6/P4jry4rhdDogpQz7vCU0TcOK5UsQCAY7jXAVXnd/4ZU3ItLlsuskBJqafPjinbdh9Q3LEDKMdqYMH1tDRJBSjUri9wejggHsdYaDHx3F1h27EOVxdxLpRApOp47VNyyDlBJKWZ1u/954/VJ43O4uasAy4nbu2ovd+w5GFkkut15utwt/VX4blCIILrrZE9Yxs6PzDKP+oEcGILJExXDP/V94ZQOafM2dlks552ht82PB3FwULsyHEAK6rkEIHvnNn5ODRQvmorWtrVPAqhAcLa1teGH9652+0x9YTqcQkhOnYvbM9PC5gWOPyJ1oSN1VQDcjkHFBkNJkjME05bCINs4FDMPA+qo34Xa5oKh9pDJmpUlLnZ6E97butJJQcQH79G8Zjv5JSU7E5prtnewWKS2fwCsbqvG9B74Gt8sFov55Ne32J0yaiHZv6NhjAKPdCCRG6GYEdmQAAir4J7vWNiXlFNe6XK7Sg4ePKl9zi4iNiR4yX4CdIbtm+y7UHjgMe+m5/b5CtDcK66vexDMvvWYRryNPhv/f6XQg2hvVRXUQ3C4nDh4+is1btuOGspLLChez7Ag9UtZYYgBbWn2wu5Z0XefSNBuldOwDgHBaOQA9B4USCMw2cIY+ts6e+78GwzDAGeu2h8muR3SXI2I7PaN6McTCuv/ZdVW4oaxkxMPFhhvW4ZYEgDHd2d2t24sRSBeFEGhuacGZs+fCBQ2+KrDDvhqbfNjw1ruI8nj69D0opXq9equdbQxueqcGdRfqR0W42FDDllaBQBBn686Tw+EAQE3ukDLRZXbfmQFK37In0nuEEPA1t9CFiw3hPw1+RW1ib3jrXRw/eRpOp6MbcexDmy/n6ggigtPhwOmz51C18e1O372awRiDYZo4V3eBdF0HKXX04MH3moGKTkq0530BRA2MAUoRO3Xm3JBV0p63P7e+qkcLmzEGvz8YPicYfSdGD9/ngoeNvfaHrdgGDc+/XIUv3nnbgHwCYwm2oVt3/gJa2/wQQoCUbOjp2Z7jAYT4EACklOzQ4WPhQgdXBChlhX19fPwk3nt/hyX+O6goITiafC144OtfwsrlSyCV6pNw9v3qLdvw83//T3i9URFjUobVwPvbd+Hg4aPImDljwJ7BsYCwzsfxE6fR5PPRhAkTYYbkLgDoujegMwNUVhIASKWOCSnbNE1z7zt0mACwwZ4DK1LgEFj32kZcrG/sFvNvmhIx0V58/ct3I3HalD5K6ozMjJn4/ZNPo83m/DDjakLgQn0DXnzlDXzv/q9d1XaA3bbagx9BmjIc5cWtGUBC55CwrkNKAcQmsKYzSqkTLpeLHTp8jPxWQMGgdpoIJzh68dWN4ZBv6nSvtc2PRQvmYtrUhHBwpur7UgqGaWJCXCyKFs1Ha5u/kz2gSMHtcmJ91ZvWbIOLq/aobnu6urv2ILgQXCkZIqF2A+iWMaQHmXoH37dvXwhK7XU4HDh9to7OnK0DMHiGoAy7fnfVHsDefYcQ7fWCMUvsC84hNA1KKdy8osxqTNjd2ufV4Uj5m1eUAehQXthV642Kwv5DR7D9gz1gDFCyPdSst3IHuhXe/m73Swz59nrOrWXsg4ePKqfDwUips+QInrDuru0jJhAASusYqgEF9oFD024/f76Btn+4F+3pYAfBLxDmpMf/+AzO1Z3HhAlxkKZl6DFYkUgxXq81bwf63WG2jVC2pBDxsTGoO38Ruh5eWCJAaAL19U34rz8+g8JF8yMTIsMw0NjUDIS9jvY3fc2tA4r1IyI0NbegsakZDr3j1jANjU0+tPn9l11mf2HZVgwnTp7G4WOfkMvthlLmgTM7drT1b3NoREfwmjCheM22D3DHbasHzYcihOX6lUrhtptXwOnQYWsAK8jSj/lzciJLrP1dx7edV5MnTcB9X7oLNds/hDfKDRkunMFyjXJuzZGdTicAYErCZNy0YhmiojyRZ+1gzzk5sy+7fbqu47qlhfC1tEIT7apGcGur25zszEh9Bxv2IN2xay+amppp8uTJMAJyK4BuBiDQ85I/A0AzFiyIDQXc+wLBYGLW7Bn0xvNPMl3XxpQ79NMI27W+5qGf4PdPPq0mTphAhjKWnN773paekkj3JFsJKBdHd+xoIpLbPB4P9h86og5+dCSShmSwYIdy93ZdCfoqt+s+g77rMTDDp0+v5RDNQDoG1W7eso08Hg83pXmOnEFrCthhDcBGz8q1tM6OCHrRDsV+b+vOyEcGC4z17eW7EvTpLexhTb/35wcm8fr6/lBJUZtZDxw6gk9OnpYulwtQtOHMjh1t4RxB/dgeDsBOJyLgeFWaps+pO8T61zeRbWCMY3TCHpzrX9+EtjY/55wBgir7eqe3YWYtDe+rPiuVfCc6JoZqtn2gdu3dF05QfPV60cYqLHe3FQDz/LoqivZ6uWkYZ7wGsxZAehD/QF8hYfbCEPCMEIK1+QNY//qmyMfGMbqgFIEIqNn2AY58fFy63W4oSW8cPPhec2/iH+iLAcJqQDn4y0YoeMHr9fLn11eR3x/o126bcQwv7J1Kf3zmRRCBW3sB6PFLvdeXpUUoLxdnP9x8Xin1gsfjYR8d+USuq3pzQAGW4xg62EG1Hx35GBur31OxMTHMNIz9Myc73kY46Wdv7/ZtamdXEgCmMfELJU1TE0I88dRzAMZmfNzVCqWsAJCnnl+P8xfqSXc4GOP4RXV1tXmpA6b7ZoC1UEAFO75v837TNN+JjY1lW7Z9ILds3TluDI4S2FFVDQ1NePr5lykuNpYboeBF6dJfAMD6yhMM9GdfQLl1XhDj7GEAMA3JfvGb/zcYdR/HIMDO3P74n5/FkWPHldvjYaTUo2d2VF+wM7739X4/5bi1iJCYVbhJ1x3LmnxN8tXK/xIF1+YPe/LIcbTDNsR9zS0oXPl5amjwQdNEvZKujNMHNtbbj/VVRv8oZ0kBMM7XEggMDGv/5ZcIhQwwNjTxguO4NGzd/8ijv8PxE6el2+1mpNSjpw9svNif0Q9c1v7PiBR4y+l0lZ49d1b+96//VZR/5sbIAsQ4hg+25X/04xMoWX0HCa4RQE2k3LP6O/qBy9kbWGH9aJr4O9M0zJjoaDz880epydccWYYdx/DBDv3+4U//DW1tfqU7HJxAP7ic0Q9cDgOsXatQXi6O79m8w5TmY56oKHHk2CfqkV/+bnxGMMywJe76qk1Y/9pGFR8XL4xQcOesyY7HAOuU1/6WdbmTeQZUsJS8jbFS0gEu+OSW5hZa99RvefHiBeMG4TDA0vtAfUMTSm+6G+cvXpQul1uQaS49sf+9dy7n4Gjg8reHE8r3seN7NjcQyW9xzhkXXH3n+/+EcVUwPLB1/0MPP4JPTpw0o7zRwjBDvxoI8QeO8PkzSZmFT6fnL6eoxBzjvjUPERGRYZg0jqGB3be/e/Jp8kzLlmlzSykxu+hIRkZRtGWkX35Sl4HJ68pKBVRwxukbwWDg6OSESeKPf3lB/f4PldA00WNO/3FcGaRU0DSBD/bsw0MPP0Lx8XFkmqZkit1jbfkC0E/DryMGqrAJAE7uq6lnyrzHNEwVHx+n/vHhR2jnrlpomhjW/IJXO2y939DYhK9/+/uQpik1h0OQlN89deDdGpSWal2jfYcHpaUaACRlFqxJnbeMJs9cGMopXEUX6xuIiEhKOYIC8+qAUopM0+rHO++9n7zJuUZ6/nJKzCp8piMNBoorM9mt1Sbt1IGafzODwf+O8nr1U2fOml+479to8jWHU7aPG4UDBRFZex4Fx99X/DNeeX2TnDRpkhYMBvZomrgPqOCXWuy5FK58zlZdLYEKrjyh/xkKBrfFxcVr79Zsl3fe+wD8gQAAGmeCAcBKT6egCYEHf/xzPPrYE2rChAnCCJkNXKp7ju/Z3GAv1I10XYEwI6XklcQnZRdvS88vI/fUbPOB//WwJcakIinVCArSsQfDtCz+J//yAkUl5crUOUtkUk5JfXJO4UIA6O0k0JFDuEIpsxelJ2WX1KfNLSVPYrb8u+//E5lhW2DcJrg0Our8J556juJS56nknGJzet5SSsou/DwAYMECfURp3SvCTJCcU7gwKbukPnVOKUUl5Zo33/lVamzyERGRaY77CXqDlO3E/17Fz8iblCuTc4rNlLyllJRZdB+AKzb6hh5dmCA9v4yiEnPMFbd/OcIE486i7jA7SMfv/uCn5JqaJVPmLKXpY4r4NsIVTcwqzE/KKd6ZPq+MYlPnhhYu/yx9uGef1WDTJKXG7QKidn3f2NhEd3zlWxSdnGemzllKSTkl9YlZBXd07NOxA9smyCuJT8wu3pqev5zi0/JDKXlL6A9PvxhpvPkptgs66vttO3fTous+S96kXCNt3jJKyu5g8I054tvowARJ2UV/SZtXRtMyC2R0cp5c89BPqKW1lYg+nSqhoy302ON/pqmzF6uJM+Yb6fnLKSmnZGdiVmE+gFFs8PUfEV/DtKzCH03PW0Kpc5aSJzHbLLv1Htq5q7ZDp1z90kBKGZkNnau7QPc98BB5EnNkUnYRpc5bRknZRX9JySuJBzAKp3oDBwuvViE5p3BlUk7x6fT8MopPyzemZRaon//ytxQyjHAHqatyuthR3BMRPb/+dcotWmWJ/LmllJxTbCTlFK9p77Krh/jtCOuy6RlFiYnZRa+FOZ6iknLNJavvojeq3410kGmaV4XzyCJ8u7g/cOgI3f3VByg2Za5MmLVQpueXUVJO8cFpOQXFAOxRP2y7boZ/e0+HoIXk7KJvgfOHdU2P9fmalFQKN15fyn/4vfuROWsGAEQOhxjqxEqDDaUIilQk9f2Fiw34P7/6Lzz+p2eorc2v4uLiBJGCVOqXTn/gB0eP7mhCaamG6upuGb2HEiO1v4uFL5WYWTKbcVorNO0ugNDY2CijvV72+VtX8W/ce0+EESicxWMoEyxcKaw6Wku3NsOev1iPx//0LB7/0zN0/ORpGRsTo+kOB0zDeF8p9Y+n92/ZaL3dPYHTcGBke7IDxydlFd8Ijn/RdT3XNEw0NDbK+LhYduuN1/E7bluN0uLFkdekUlZaWD7yBzdThxPEO4bGH/joKJ56dh2eXVdFRz/+RMZER2sutwemYZwDqf990h38DXbsMMISUWGEFnVGw1DiVsz5WpWdne3wUfxfEWff1nU91zAMNDY2SpfLicUL5vG7b7+ZXbe0CNOmJkRetnP+8GE6ydtKv646pH5rJ3pLayverdmBPz2zDps216gLF+spNiZGuD1uGCHjHCn6jSHMX9ftfT+cgLlcAMMRw9c7RgMDhNHeGZ0ZQctVSsHna4ZpmuaUyRP5qutL+a2rrsO1+XMwIT62Uyl2Yid7v7zNEJfLGBZ920c3wUod19UWafMHUHvgEF7Z8BZeeHkDHfv4hCQiER0TzRwOh0V40G8M1oHwIzzqO2IUMQAAgKG8nNtGYnZ2uaOBTt3IGb4phFjOhSZCwSB8zc2kaUJOmzKZL5w/lxUvXsAW5uchc/Y1cLtcPRZs5zOwCNp7BewcSL0ZnaaUOHL0E+zcXYuabR9gc812deLUGdXm9/OoKC93u90AEaQ0dxOxRw1uvBQhvKXyJEYB4W2MNgaw0YkRACApt2QOlPoiY2y1ECIbzDokuq2tDaZpmlEeN0udnsRmXZPO5uRksLzsDCQnTkVKchJcLkevjNEbpFTwNTfjYn0jjp88jb37D2FX7QH66PAxOvLxcfI1NxPAhMfjYS6XC5wxSNM4qYANnOHPJ7IS34zUfxSN+K4YrQxgw2aE9s4rLxeJ+84uZiQ/yzi7iTM2WwhdSCkRCAYRDAZhGIYSgiuP24242BgWHe1lM1KnMyklcrNms5hob/jIqc4wpcQHu/eRaUqcv3iRzpyto0AgiEafj6QpmRBCOJxOuFwu62xDJaGUOq6I3iSi5wMh8636w1t9kQJHMeFtjHYG6AiO0lLeeZ5cLlJzzs02IVcyoiXgLJODp3FNeAAGKWU407hEMBgEGIMZ9jj29hFd13n4F7quQwgBTdMAEJSUkkidVgr7QdhCgqrIGdxl5eG1q1QuUAkAo5vwNsYSA9hgQDm3klp3dZqUi8Scs4kCyJJKLmSczWSMpYBoKmMskTEQYzyecY4eRQARpJRNjDFFRM0EHCGlGhn4LnDaLUgcCLlaP+lEcKDdZz/KR3tPGIsM0BGWQ6m0lKM6gXqfUlXwlLyNsYwLkmZoFoF5eyxMkVRk1mq6U6kGM3DyZE0vab0ruJV4OYHGykjvDWOdAbrCYojycoa6OoaEBLIOSBioh62CA/sYSu2yKgkWsccswbviamOA3tChneUc5QAqAZR3eapdd9u4agg9jnGMYxzd8f8B+dco8jtHeoQAAAAASUVORK5CYII=";
 const KEEP = '채용 절차가 끝난 날부터 6개월';   // 미채용 지원자 정보 보관 기간 — 회사 기준이 정해지면 이 줄만 바꾸세요
@@ -277,8 +307,8 @@ function step2() {
 }
 
 /* 3. 지원서 — 문항 구성은 브랜드 온라인 지원서(구글폼)를 따름. 필수(*)는 여기서 검사, 서버는 형식 · 길이만 검사 */
-const Q = b => [
-  { sec:'1. 지원자 기본 정보' },
+const QALL = b => [
+  { sec:'지원자 기본 정보' },
   { k:'한줄소개', t:'한 줄 소개', ph:'예: 인근 거주 · 영어 가능 · 유사 업무 경력 있음', max:100 },
   { k:'이름', t:'성명', req:1, max:20, ac:'name' },
   { k:'생년월일', t:'생년월일', req:1, type:'date' },
@@ -286,28 +316,39 @@ const Q = b => [
   { k:'이메일', t:'이메일 주소', req:1, type:'email', max:100, ac:'email' },
   { k:'거주지', t:'현재 거주지 (시/구/동)', req:1, ph:'예: 서울시 용산구 이태원동', max:50 },
   { k:'성별', t:'성별', pick:FORM.성별 },
-  { mil:1 },
+  { mil:1, mod:'병역' },
   { k:'유선전화', t:'유선전화', type:'tel', max:20, ph:'선택' },
-  { sec:'2. 지원 분야 및 근무 형태' },
+  { sec:'지원 분야 및 근무 형태' },
   { k:'근무형태', t:'근무 형태', req:1, pick:FORM.근무형태 },
   { k:'근무기간', t:'근무 가능 기간', req:1, pick:FORM.근무기간 },
   { k:'면접가능일', t:'면접 가능 일자', req:1, type:'date' },
   { k:'근무시작일', t:'근무 시작 가능 일자', req:1, type:'date' },
-  { sec:'3. 최종 학력 및 경력 사항' },
-  { edu:1 },
-  { car:1 },
+  { sec:'최종 학력 및 경력 사항' },
+  { edu:1, mod:'학력', req:1 },
+  { car:1, mod:'경력', req:1 },
   { k:'이전직장', t:'이전 직장 경험을 간략히 설명해 주세요 (가장 최근 2개 이내)', area:1, max:1000 },
-  { sec:'4. 자기소개 및 역량' },
+  { sec:'자기소개 및 역량' },
   { k:'자기소개', t:'자기소개 및 역량', area:1, max:1500, ph:'근무 가능한 요일 · 시간도 적어 주시면 좋아요' },
   { k:'지원동기', t:`${b}에 지원하게 된 동기는 무엇인가요?`, req:1, area:1, max:1500 },
   { k:'강점', t:'본인의 강점과 멤버로서 기여할 수 있는 부분 (판매, 고객 서비스, 팀워크 등)', req:1, area:1, max:1000 },
   { k:'서비스역량', t:'고객 서비스 역량 (1점 매우 미흡 ~ 5점 매우 우수)', req:1, pick:FORM.점수 },
   { k:'브랜드이해도', t:`${b} 브랜드에 대한 이해도 (1~5)`, pick:FORM.점수 },
-  { talent:1 },
-  { sec:'5. 포트폴리오' },
+  { talent:1, mod:'어학특기' },
+  { sec:'포트폴리오' },
   { k:'포트폴리오', t:'포트폴리오 (SNS 링크)', type:'url', ph:'https://', max:300 },
-  { photo:1 },
+  { photo:1, mod:'사진' },
 ];
+/* 브랜드별 지원서 항목 (아리 고객사 화면에서 담당자가 정함): 끈 문항 빼고, 필수 바꾸고, 브랜드 추가 질문을 맨 뒤에 */
+const FIXED = ['이름', '생년월일', '연락처'];
+function Q(b) {
+  const c = (brand() || {}).지원서 || {}, 끔 = c.끔 || [], 필수 = c.필수 || {}, key = q => q.k || q.mod;
+  let l = QALL(b).filter(q => q.sec || FIXED.indexOf(key(q)) >= 0 || 끔.indexOf(key(q)) < 0)
+    .map(q => !q.sec && FIXED.indexOf(key(q)) < 0 && 필수[key(q)] != null ? Object.assign({}, q, { req:필수[key(q)] }) : q);
+  const 추가 = (c.추가 || []).map(x => ({ k:'추가_' + x.id, id:x.id, t:x.t, req:x.필수, area: x.형식 === '긴글' ? 1 : 0, max:1000, pick: x.형식 === '선택' ? x.보기 : null }));
+  if (추가.length) l = l.concat([{ sec:'브랜드 추가 질문' }], 추가);
+  let n = 0;
+  return l.filter((q, i) => !q.sec || (l[i + 1] && !l[i + 1].sec)).map(q => q.sec ? { sec: ++n + '. ' + q.sec } : q);
+}
 function step3() {
   F.단계 = 3; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
@@ -320,12 +361,12 @@ function step3() {
           `<input id="병역_${k}" maxlength="40" placeholder="${ph}" value="${esc(F.병역[k])}" style="margin-top:8px">`).join('')}</div>`
     : q.talent ? (ITEMS.언어.length ? `<label>어학 능력 (고객응대 · 소통 가능한 수준만)</label>${pk('언어', ITEMS.언어, x => F.언어.indexOf(x) >= 0)}` : '')
                + (ITEMS.특기.length ? `<label>해당하는 것을 모두 골라 주세요</label>${pk('특기', ITEMS.특기, x => F.특기.indexOf(x) >= 0)}` : '')
-    : q.edu ? `<label>학력 사항 <span>*</span></label><div class="lead" style="font-size:13px;margin:0 0 4px">최종 학력까지 적어 주세요</div>` + F.학력표.map((e, i) => `<div class="trow"><b>${e.구분}</b>
+    : q.edu ? `<label>학력 사항${q.req ? ' <span>*</span>' : ''}</label><div class="lead" style="font-size:13px;margin:0 0 4px">최종 학력까지 적어 주세요</div>` + F.학력표.map((e, i) => `<div class="trow"><b>${e.구분}</b>
         <input id="학_학교명${i}" maxlength="100" placeholder="학교명" value="${esc(e.학교명)}">
         <div class="row2"><input id="학_기간${i}" maxlength="40" placeholder="재학 기간 (예: 2015.03 ~ 2018.02)" value="${esc(e.기간)}">
         <select id="학_수학${i}">${['', ...FORM.수학].map(x => `<option value="${x}" ${x === e.수학 ? 'selected' : ''}>${x || '졸업 여부'}</option>`).join('')}</select></div>
         ${i ? `<input id="학_전공${i}" maxlength="100" placeholder="전공" value="${esc(e.전공)}">` : ''}</div>`).join('')
-    : q.car ? `<label>경력 사항 <span>*</span></label><div id="w경력">${carHtml()}</div>`
+    : q.car ? `<label>경력 사항${q.req ? ' <span>*</span>' : ''}</label><div id="w경력">${carHtml()}</div>`
     : q.photo ? `<label>이력서 사진 (얼굴 정면 사진)</label><input id="사진" type="file" accept="image/jpeg,image/png"><div class="lead" id="사진안내" style="font-size:13px;margin:4px 0 0">${F.사진 ? '사진이 첨부됐어요' : '선택'}</div>`
     : q.pick ? lab(q) + pk(q.k, q.pick, x => F[q.k] === x)
     : lab(q) + (q.area ? `<textarea id="${q.k}" maxlength="${q.max}" placeholder="${esc(q.ph || '')}">${esc(F[q.k])}</textarea>`
@@ -357,11 +398,11 @@ function step3() {
   // 하나만 고르는 버튼 (다시 누르면 해제) / 여러 개 고르는 버튼
   const one = (id, get, set, after) => { const box = $('#p' + id); if (box) box.querySelectorAll('button').forEach(x => x.onclick = () => { set(get() === x.dataset.v ? '' : x.dataset.v);
     box.querySelectorAll('button').forEach(y => y.classList.toggle('on', y.dataset.v === get())); if (after) after(); }); };
-  Q(b.이름).filter(q => q.pick).forEach(q => one(q.k, () => F[q.k], v => F[q.k] = v, q.k === '성별' ? () => $('#w병역').hidden = F.성별 !== '남성' : null));
+  Q(b.이름).filter(q => q.pick).forEach(q => one(q.k, () => F[q.k], v => F[q.k] = v, q.k === '성별' ? () => { if ($('#w병역')) $('#w병역').hidden = F.성별 !== '남성'; } : null));
   one('군별', () => F.병역.군별, v => F.병역.군별 = v);
   ['언어', '특기'].forEach(k => { const box = $('#p' + k); if (box) box.querySelectorAll('button').forEach(x => x.onclick = () => {
     const v = x.dataset.v, i = F[k].indexOf(v); i >= 0 ? F[k].splice(i, 1) : F[k].push(v); x.classList.toggle('on', i < 0); }); });
-  $('#사진').onchange = e => { const f = e.target.files[0]; if (!f) return;
+  if ($('#사진')) $('#사진').onchange = e => { const f = e.target.files[0]; if (!f) return;
     const img = new Image(); img.onload = () => {   // 서버에 보내기 전에 줄임 (가로세로 600px 이하 JPG)
       const k = Math.min(1, 600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
@@ -386,31 +427,33 @@ function keepCar() { if (!$('#경_회사0')) return; F.경력표.forEach((c, i) 
 function carAdd() { keepCar(); F.경력표.push({}); $('#w경력').innerHTML = carHtml(); }
 function carDel(i) { keepCar(); F.경력표.splice(i, 1); $('#w경력').innerHTML = carHtml(); }
 function keep() {
-  F.학력표.forEach((e, i) => ['학교명', '기간', '수학'].concat(i ? ['전공'] : []).forEach(k => e[k] = $('#학_' + k + i).value));
-  keepCar(); F.무경력 = $('#무경력').checked;
+  if ($('#학_학교명0')) F.학력표.forEach((e, i) => ['학교명', '기간', '수학'].concat(i ? ['전공'] : []).forEach(k => e[k] = $('#학_' + k + i).value));
+  keepCar(); if ($('#무경력')) F.무경력 = $('#무경력').checked;
   Q('').filter(q => q.k && !q.pick).forEach(q => F[q.k] = $('#' + q.k).value);
+  if ($('#병역_병과'))
   ['병과', '계급', '기간', '면제사유'].forEach(k => F.병역[k] = $('#병역_' + k).value);
   F.동의 = $('#동의').checked; F.동의3 = $('#동의3').checked; F.인재풀 = $('#인재풀').checked;
 }
 async function submit() {
   keep();
   const err = m => { $('#err').textContent = m; };
-  const miss = Q(brand().이름).find(q => q.req && !String(F[q.k] || '').trim());
+  const miss = Q(brand().이름).find(q => q.k && q.req && !String(F[q.k] || '').trim());
   if (miss) return err(miss.t.replace(/\s*\(.*$/, '') + ' 항목을 입력해 주세요.');
-  if (!F.학력표.some(e => e.학교명.trim())) return err('학력 사항을 입력해 주세요.');
-  if (!F.무경력 && !F.경력표.some(c => String(c.회사 || '').trim())) return err('경력 사항을 입력하거나 "경력이 없어요"를 골라 주세요.');
+  const 문항 = Q(brand().이름), 필요 = m => 문항.some(q => q.mod === m && q.req);
+  if (필요('학력') && !F.학력표.some(e => e.학교명.trim())) return err('학력 사항을 입력해 주세요.');
+  if (필요('경력') && !F.무경력 && !F.경력표.some(c => String(c.회사 || '').trim())) return err('경력 사항을 입력하거나 "경력이 없어요"를 골라 주세요.');
   if (!/^01\d{8,9}$/.test(F.연락처.replace(/\D/g, ''))) return err('휴대폰 번호를 확인해 주세요.');
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.이메일.trim())) return err('이메일을 확인해 주세요.');
-  if (F.포트폴리오.trim() && !/^https?:\/\/\S+$/.test(F.포트폴리오.trim())) return err('포트폴리오 링크는 https:// 로 시작하게 적어 주세요.');
+  if (String(F.이메일 || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.이메일.trim())) return err('이메일을 확인해 주세요.');
+  if (String(F.포트폴리오 || '').trim() && !/^https?:\/\/\S+$/.test(F.포트폴리오.trim())) return err('포트폴리오 링크는 https:// 로 시작하게 적어 주세요.');
   if (!F.동의) return err('개인정보 수집 · 이용에 동의해 주세요.');
   if (!F.동의3) return err('개인정보 제3자 제공에 동의해 주세요.');
   $('#next').disabled = true; $('#next').textContent = '보내는 중…';
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
-  const 답 = {}; Q('').filter(q => q.k).forEach(q => 답[q.k] = String(F[q.k] || '').trim());
+  const 답 = {}, 추가답변 = {}; Q('').filter(q => q.k).forEach(q => { const v = String(F[q.k] || '').trim(); q.id ? 추가답변[q.id] = v : 답[q.k] = v; });
   const r = await call(Object.assign(답, { action:'지원접수', 브랜드:F.브랜드, 매장코드:F.매장코드, 시도: m ? m.시도 : F.시도, 구군: m ? m.구군 : F.구군,
     개인정보동의:'Y', 제3자동의:'Y', 가능언어:F.언어, 특기:F.특기, 인재풀동의: F.인재풀 ? 'Y' : '',
     병역: F.성별 === '남성' ? F.병역 : {}, 사진:F.사진,
-    학력표:F.학력표, 경력표: F.무경력 ? [] : F.경력표, 무경력: F.무경력 ? 'Y' : '', 웹사이트:$('#웹사이트').value }))
+    추가답변, 학력표:F.학력표, 경력표: F.무경력 ? [] : F.경력표, 무경력: F.무경력 ? 'Y' : '', 웹사이트:$('#웹사이트').value }))
     .catch(() => ({ error:'인터넷 연결을 확인하고 다시 시도해 주세요.' }));
   if (!r.success) { $('#next').disabled = false; $('#next').textContent = '지원하기'; return err(r.error || '접수하지 못했어요. 다시 시도해 주세요.'); }
   done(r.접수번호, m);
