@@ -165,10 +165,25 @@ const FORM = { 성별:['남성', '여성'], 근무형태:['주 5일 PT', '주 2~
 let BRANDS = [], ITEMS = { 언어:[], 특기:[] };
 const TALENT_KEEP = '동의한 날부터 1년';   // 인재풀 보관 기간 — 서버 TALENT_KEEP_DAYS 와 같게
 
+/* 뒤로가기: 단계마다 브라우저 기록에 남김 → 휴대폰 뒤로가기 = 이전 단계 (사이트 밖으로 안 나감) */
+let curStep = '', popping = false;
+function mark(name) {
+  const st = { s:name, 방식:S1.방식 };
+  if (!popping && curStep && (curStep !== name || (history.state || {}).방식 !== S1.방식)) history.pushState(st, '');
+  else if (!curStep) history.replaceState(st, '');
+  curStep = name;
+}
+addEventListener('popstate', e => {
+  if (F.완료) return location.reload();   // 접수 뒤 뒤로가기 → 처음부터 (같은 지원서를 다시 내지 않게)
+  const st = e.state || { s:'step1' };
+  if (curStep === 'step3' && $('#동의')) keep();   // 쓰던 지원서는 그대로 기억
+  popping = true; S1.방식 = st.방식 || S1.방식;
+  try { (st.s !== 'step1' && brand() ? { intro:stepIntro, step2, step3 }[st.s] || step1 : step1)(); } finally { popping = false; }
+});
 function steps() { document.querySelectorAll('#steps i').forEach((el, i) => el.classList.toggle('on', i < F.단계)); }
 function foot(next, label, back) {
   $('#foot').hidden = !next; $('#next').textContent = label || '다음'; $('#next').onclick = next; $('#next').disabled = false;
-  $('#back').hidden = !back; $('#back').onclick = back;
+  $('#back').hidden = !back; $('#back').onclick = () => curStep !== 'step1' ? history.back() : back();   // 화면 [이전]도 브라우저 기록대로
 }
 const brand = () => BRANDS.find(b => b.이름 === F.브랜드);
 
@@ -177,6 +192,7 @@ const SEARCH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 const avatar = n => `<div class="av" style="background:${color(n)}">${esc(String(n).slice(0, 1))}</div>`;
 const S1 = { 방식:'지역', 찾기:'', 업종:'전체', 시도:'', 구군:'' };
 function step1() {
+  mark('step1');
   F.단계 = 1; steps(); $('#steps').hidden = true;
   const 매장수 = BRANDS.reduce((n, b) => n + b.매장.length, 0);
   const 지역수 = new Set(BRANDS.flatMap(b => b.매장.map(m => m.시도).filter(Boolean))).size;
@@ -238,6 +254,7 @@ function pickBrand(name) { if (F.브랜드 !== name) Object.assign(F, { 시도:'
 
 /* 브랜드 소개 (아리 고객사 화면에서 입력한 내용) */
 function stepIntro() {
+  mark('intro');
   F.단계 = 1; $('#steps').hidden = true; window.scrollTo(0, 0);
   const b = brand(), c = color(b.이름);
   const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
@@ -259,6 +276,7 @@ function stepIntro() {
 
 /* 2. 지역 · 매장 */
 function step2() {
+  mark('step2');
   F.단계 = 2; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
   const b = brand(), 시도들 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))].sort();
   const 구군들 = [...new Set(b.매장.filter(m => !F.시도 || m.시도 === F.시도).map(m => m.구군).filter(Boolean))].sort();
@@ -320,6 +338,7 @@ function Q(b) {
   return l.filter((q, i) => !q.sec || (l[i + 1] && !l[i + 1].sec)).map(q => q.sec ? { sec: ++n + '. ' + q.sec } : q);
 }
 function step3() {
+  mark('step3');
   F.단계 = 3; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
   const 지역 = m ? [m.시도, m.구군].filter(Boolean).join(' ') : [F.시도, F.구군].filter(Boolean).join(' ');
@@ -431,6 +450,7 @@ async function submit() {
 
 /* 4. 완료 */
 function done(no, m) {
+  F.완료 = true; history.replaceState({ s:'done' }, '');
   $('#steps').hidden = true; foot(null); window.scrollTo(0, 0);
   $('#view').innerHTML = `<div class="done"><div class="ok">✓</div><h1>지원이 접수되었어요</h1>
     <p class="lead" style="margin:0">${m && m.매장.indexOf(F.브랜드) === 0 ? esc(m.매장) : esc(F.브랜드) + (m ? ' ' + esc(m.매장) : '')} 담당자가 확인한 뒤<br>입력하신 번호로 연락드릴게요</p>
