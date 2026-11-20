@@ -6,143 +6,157 @@
 <title>통합 입사지원 포탈 사이트</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
-/* 아리오 통합 입사지원 — Apps Script 프로젝트에 HTML 파일 '지원'으로 붙여 넣으면 웹앱주소?page=apply 로 열림 */
-:root{--pri:#1E293B;--pri-d:#0F172A;--pri-bg:#E2E8F0;--ink:#1C1917;--ink2:#334155;--sub:#64748B;--line:#E2E8F0;--bg:#F5F5F4;--red:#F04452;--green:#03A94D;--green-bg:#E5F8EE}
+/* 아리오 통합 입사지원 — Apps Script 프로젝트에 HTML 파일 '지원'으로 붙여 넣으면 웹앱주소?page=apply 로 열림
+   11/20 디자인: 시안 A "채용 포털" (아리 관리 화면과 같은 회색 + 초록, 선 · 목록 중심) */
+:root{--ink:#17181B;--ink2:#43464E;--sub:#62666E;--line:#E3E4E8;--bg:#F7F7F8;--acc:#1D7A5F;--acc-bg:#E5F3EE;--red:#C9372C;--red-bg:#FCEDEB;
+  --pri:#17181B;--pri-bg:#EEEFF2}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Pretendard,'Malgun Gothic',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.2px}
-button,input,select,textarea{font:inherit;color:inherit;letter-spacing:inherit}
-button{cursor:pointer;border:0;border-radius:16px;padding:15px 18px;font-weight:700;background:#fff;color:var(--ink2);transition:transform .08s}
-button:active{transform:scale(.98)}
-button.pri{background:var(--pri);color:#fff}
-button.big{width:100%;padding:18px;font-size:17px}
+html,body{margin:0;background:#fff;color:var(--ink);font:16px/1.55 Pretendard,'Malgun Gothic',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:11px 16px;font-weight:700;background:#fff;color:var(--ink)}
+button:hover{background:var(--bg)}
+button.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+button.pri:hover{background:#000}
+button.big{width:100%;padding:14px;font-size:16px}
 button:disabled{opacity:.45}
-input,select,textarea{width:100%;border:0;background:#fff;border-radius:14px;padding:16px;outline:none}
-input:focus,select:focus,textarea:focus{box-shadow:inset 0 0 0 2px var(--pri)}
-textarea{min-height:110px;resize:vertical}
-.wrap{max-width:560px;margin:0 auto;padding:20px 20px calc(120px + env(safe-area-inset-bottom))}
-.top{display:flex;align-items:center;gap:10px;padding:4px 0 22px}
-.top img{width:34px;height:34px;border-radius:11px;background:#fff}
-.top b{font-size:17px;font-weight:800}
-.steps{display:flex;gap:6px;margin-bottom:22px}
-.steps i{flex:1;height:5px;border-radius:9px;background:#D9DEE3}
-.steps i.on{background:var(--pri)}
-h1{font-size:26px;line-height:1.35;margin:0 0 8px;font-weight:800}
-.lead{color:var(--sub);margin:0 0 22px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.brand{background:#fff;border-radius:20px;padding:20px 16px;text-align:left;display:flex;flex-direction:column;gap:12px;border:2px solid transparent}
-.brand.on{border-color:var(--pri);background:var(--pri-bg)}
-.brand .av{width:44px;height:44px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
-.brand small{color:var(--sub);font-weight:600}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:11px 12px;outline:none;font-size:16px}
+input:focus,select:focus,textarea:focus{border-color:var(--ink)}
+textarea{min-height:100px;resize:vertical}
+input::placeholder,textarea::placeholder{font-size:14.5px;color:#9A9DA4}
+/* 틀: 위쪽 머리줄 + 가운데 내용 */
+.top{display:flex;align-items:center;gap:10px;height:60px;padding:0 32px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:10}
+.top img{width:28px;height:28px;border-radius:7px;border:1px solid var(--line)}
+.top b{font-size:16px;font-weight:800}
+.top span{margin-left:auto;color:var(--sub);font-size:14px}
+.steps{display:flex;height:3px;background:var(--line)}.steps i{flex:1}.steps i.on{background:var(--acc)}
+.wrap{max-width:680px;margin:0 auto;padding:28px 20px calc(110px + env(safe-area-inset-bottom))}
+body[data-step="step1"] .wrap,body[data-step="step3"] .wrap{max-width:1200px;padding:0 0 calc(110px + env(safe-area-inset-bottom))}
+h1{font-size:24px;line-height:1.35;margin:0 0 6px;font-weight:800}
+.lead{color:var(--sub);margin:0 0 20px;font-size:15px}
+.empty{border:1px solid var(--line);border-radius:10px;padding:24px;text-align:center;color:var(--sub);font-size:15px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:4px;background:var(--acc-bg);color:var(--acc);margin-left:6px;vertical-align:2px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.store{width:100%;display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:15px 16px;margin-bottom:8px;text-align:left;border:2px solid transparent;font-weight:600}
-.store.on{border-color:var(--pri);background:var(--pri-bg)}
-.store small{display:block;color:var(--sub);font-weight:500;font-size:13.5px}
-.store .dot{width:22px;height:22px;border-radius:50%;border:2px solid #C4CAD0;flex-shrink:0}
-.store.on .dot{border:7px solid var(--pri)}
-label{display:block;font-size:14px;font-weight:700;color:var(--ink2);margin:16px 0 8px}
-label span{color:var(--red)}
-.agree{background:#fff;border-radius:18px;padding:18px;margin-top:18px;font-size:14px;color:var(--ink2)}
-.agree table{width:100%;border-collapse:collapse;margin:10px 0}
-.agree td{padding:7px 0;border-bottom:1px solid var(--bg);vertical-align:top}
-.agree td:first-child{color:var(--sub);width:86px;font-weight:600}
-.agree .chk{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:700;margin-top:6px;color:var(--ink)}
-.agree .chk input{width:24px;height:24px;accent-color:var(--pri);flex-shrink:0}
-.foot{position:fixed;left:0;right:0;bottom:0;padding:14px 20px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
-.foot div{max-width:560px;margin:0 auto;display:flex;gap:10px}
-.foot .back{flex:0 0 auto;padding:18px 20px}
-.err{color:var(--red);font-size:14px;font-weight:600;min-height:20px;margin-top:10px;text-align:center}
-.done{text-align:center;padding-top:40px}
-.done .ok{width:76px;height:76px;border-radius:26px;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:40px;font-weight:800}
-.no{display:inline-block;background:#fff;border-radius:14px;padding:12px 20px;font-size:20px;font-weight:800;margin:18px 0 8px;letter-spacing:1px}
-.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.empty{background:#fff;border-radius:16px;padding:22px;text-align:center;color:var(--sub)}
-/* 첫 화면 꾸미기 */
-body{background:var(--bg)}
-.hero{position:relative;overflow:hidden;border-radius:28px;padding:30px 24px 26px;color:#fff;background:linear-gradient(135deg,#0F172A 0%,#1E293B 60%,#334155 100%);box-shadow:0 18px 40px rgba(15,23,42,.22);margin-bottom:18px}
-.hero::before,.hero::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.14)}
-.hero::before{width:220px;height:220px;right:-70px;top:-80px}
-.hero::after{width:140px;height:140px;right:40px;bottom:-70px;background:rgba(255,255,255,.10)}
-.hero .tag{display:inline-block;background:rgba(255,255,255,.2);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;margin-bottom:14px}
-.hero h1{font-size:28px;color:#fff;margin:0 0 10px;position:relative}
-.hero p{margin:0;opacity:.9;position:relative}
-.hero svg{position:absolute;right:16px;top:16px;width:70px;height:70px;opacity:.95}
-.stats{display:flex;gap:8px;margin-top:22px;position:relative}
-.stats div{flex:1;background:rgba(255,255,255,.16);border-radius:16px;padding:12px}
-.stats b{display:block;font-size:22px}
-.stats small{opacity:.85;font-size:12.5px;font-weight:600}
-.how{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:26px}
-.how div{background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-radius:18px;padding:14px 12px;font-size:13.5px;font-weight:700;color:var(--ink2)}
-.how i{display:flex;width:28px;height:28px;border-radius:10px;background:var(--pri-bg);color:var(--pri);font-style:normal;align-items:center;justify-content:center;margin-bottom:8px;font-weight:800}
-.how small{display:block;color:var(--sub);font-weight:500;margin-top:2px;font-size:12.5px}
-.sect{font-size:19px;font-weight:800;margin:0 0 12px}
-.brand{box-shadow:0 4px 16px rgba(25,31,40,.05)}
-.brand .regions{color:var(--sub);font-size:12.5px;font-weight:500;margin-top:2px}
-.search{position:relative;margin:4px 0 14px}
-.search input{padding-left:46px;box-shadow:0 4px 16px rgba(25,31,40,.05)}
-.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--sub)}
-.tabs{display:flex;background:#E4E8EC;border-radius:16px;padding:4px;margin-bottom:16px}
-.tabs button{flex:1;background:none;padding:12px;border-radius:13px;color:var(--sub)}
-.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.hot{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 22px;padding:2px 20px;scrollbar-width:none}
-.hot::-webkit-scrollbar{display:none}
-.hot button{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:10px 14px 10px 10px;border-radius:999px;font-size:14.5px;box-shadow:0 4px 14px rgba(25,31,40,.06)}
-.hot .av{width:28px;height:28px;border-radius:50%;font-size:13px;color:#fff;display:flex;align-items:center;justify-content:center}
-.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -20px 12px;padding:0 20px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chips button{flex-shrink:0;padding:9px 15px;border-radius:999px;font-size:14px}
-.chips button.on{background:var(--ink);color:#fff}
-.rows{background:#fff;border-radius:22px;padding:6px;box-shadow:0 4px 16px rgba(25,31,40,.05)}
-.rowi{width:100%;display:flex;align-items:center;gap:12px;background:none;padding:13px 12px;border-radius:16px;text-align:left;font-weight:700}
-.rowi:hover{background:#F7F9FB}
-.rowi .av{width:42px;height:42px;border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.rowi small{display:block;color:var(--sub);font-weight:500;font-size:13.5px;margin-top:1px}
-.rowi .chev{margin-left:auto;color:#C4CAD0;font-size:20px}
-.badge{display:inline-block;font-size:11.5px;font-weight:800;color:var(--red);background:#FFEEEF;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
-.cnt{color:var(--sub);font-size:13.5px;margin:0 4px 8px}
-/* 마우스로 쓰는 PC: 옆으로 밀 수 없으니 여러 줄로 펼침 */
-@media (hover:hover) and (pointer:fine){.hot,.chips{flex-wrap:wrap;overflow:visible;margin-left:0;margin-right:0;padding-left:0;padding-right:0}}
-.intro{background:#fff;border-radius:26px;padding:24px;box-shadow:0 8px 28px rgba(25,31,40,.07);margin-bottom:14px;position:relative;overflow:hidden}
-.intro::before{content:'';position:absolute;inset:0 0 auto 0;height:86px;background:var(--brand-bg,#E2E8F0)}
-.intro .logo{position:relative;width:72px;height:72px;border-radius:22px;background:#fff;box-shadow:0 6px 18px rgba(25,31,40,.12);display:flex;align-items:center;justify-content:center;overflow:hidden;margin:18px 0 14px;font-size:28px;font-weight:800;color:#fff}
+.av{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;flex-shrink:0}
+
+/* 1. 첫 화면: 왼쪽 조건 · 오른쪽 목록 */
+.home{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 60px)}
+.filt{border-right:1px solid var(--line);background:var(--bg);padding:28px 24px}
+.filt h1{font-size:22px}
+.filt .lead{font-size:14px;margin-bottom:18px}
+.seg2{display:flex;border:1px solid var(--line);border-radius:8px;padding:3px;background:#fff;margin-bottom:12px}
+.seg2 button{flex:1;border:0;padding:8px;border-radius:6px;color:var(--sub);font-weight:600}.seg2 button.on{background:var(--ink);color:#fff}
+.filt input,.filt select{margin-bottom:10px}
+.only{display:flex;align-items:center;gap:8px;font-size:14.5px;margin:4px 0 0;cursor:pointer}.only input{width:18px;height:18px;margin:0;accent-color:var(--acc)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.chips button{padding:6px 12px;font-size:14px;font-weight:600;border-radius:999px}.chips button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.site-foot{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);color:var(--sub);font-size:12.5px;line-height:1.7}
+.res{padding:28px 32px}
+.res .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}.res .hd b{font-size:16px}.res .hd span{color:var(--sub);font-size:14px}
+.rows{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.rowi{width:100%;display:grid;grid-template-columns:44px minmax(0,1fr) 150px 20px;gap:12px;align-items:center;border:0;border-bottom:1px solid var(--line);border-radius:0;background:#fff;padding:12px 16px;text-align:left;font-weight:700}
+.rowi:last-child{border-bottom:0}.rowi:hover{background:#FAFAFB}
+.rowi small{display:block;color:var(--sub);font-weight:500;font-size:13.5px}
+.rowi .cell{color:var(--ink2);font-weight:500;font-size:14px}
+.rowi .chev{color:#B9BCC2;font-size:20px}
+.draft{display:flex;align-items:center;gap:10px;border:1px solid var(--acc);background:var(--acc-bg);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:14.5px}
+.draft b{flex:1}.draft button{padding:7px 12px;font-size:14px}
+
+/* 브랜드 소개 · 매장 고르기 */
+.intro{display:flex;gap:16px;align-items:center;padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.intro .logo{position:relative;width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:26px;font-weight:800;color:#fff;flex-shrink:0}
 .intro .logo img{width:100%;height:100%;object-fit:contain;background:#fff}
-.intro h1{position:relative;margin:0 0 6px}
-.intro .one{color:var(--ink2);font-weight:600;margin:0}
-.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.pills span{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--bg);color:var(--ink2)}
-.pills .hotp{background:#FFEEEF;color:var(--red)}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.facts div{background:#fff;border-radius:18px;padding:14px 12px}
-.facts small{display:block;color:var(--sub);font-size:12.5px;font-weight:600}
-.facts b{display:block;font-size:16px;margin-top:2px;word-break:keep-all}
-.info{background:#fff;border-radius:22px;padding:20px;margin-bottom:10px}
-.info h3{margin:0 0 8px;font-size:16px;display:flex;align-items:center;gap:8px}
-.info h3 i{font-style:normal;width:28px;height:28px;border-radius:10px;background:var(--pri-bg);display:flex;align-items:center;justify-content:center;font-size:14px}
-.info p{margin:0;white-space:pre-line;color:var(--ink2)}
-.info .none{color:var(--sub)}
-.pick{display:flex;flex-wrap:wrap;gap:8px}
-.trow{background:#F9FAFB;border-radius:12px;padding:12px;margin-bottom:10px}.trow b{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}.trow input,.trow select{margin-bottom:8px}.trow .row2{margin-bottom:0}
-.del{border:0;background:none;color:#F04452;font-size:13px}.addrow{width:100%;padding:12px;border:1px dashed #B0B8C1;border-radius:12px;background:#fff;color:var(--pri);font-weight:600}
-.qsec{font-size:17px;margin:30px 0 -4px;padding-top:18px;border-top:1px solid #E5E8EB}
-.pick button{padding:10px 14px;border-radius:999px;font-size:14.5px;font-weight:600;border:2px solid transparent}
-.pick button.on{background:var(--pri-bg);color:var(--pri);border-color:var(--pri)}
-.opt{background:#fff;border-radius:18px;padding:16px 18px;margin-top:12px;font-size:14px;color:var(--ink2)}
-.opt .chk{display:flex;gap:10px;align-items:center;font-size:15.5px;font-weight:700;color:var(--ink);margin-top:8px}
-.opt .chk input{width:22px;height:22px;accent-color:var(--pri);flex-shrink:0}
-.site-foot{margin-top:34px;padding-top:18px;border-top:1px solid #DDE2E7;color:var(--sub);font-size:12.5px;line-height:1.7}</style>
+.intro h1{margin:0}
+.intro .one{color:var(--ink2);margin:2px 0 0}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:10px;margin-bottom:20px;overflow:hidden}
+.facts div{padding:12px 16px;border-right:1px solid var(--line)}.facts div:last-child{border-right:0}
+.facts small{display:block;color:var(--sub);font-size:13px}.facts b{font-size:16px}
+.info{padding:16px 0;border-bottom:1px solid var(--line)}
+.info h3{margin:0 0 6px;font-size:16px}
+.info p{margin:0;white-space:pre-line;color:var(--ink2)}.info .none{color:var(--sub)}
+.store{width:100%;display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:8px;text-align:left;font-weight:700;background:#fff}
+.store.on{border-color:var(--acc);background:var(--acc-bg)}
+.store small{display:block;color:var(--sub);font-weight:500;font-size:13.5px}
+.store .dot{width:20px;height:20px;border-radius:50%;border:2px solid #C4C7CD;flex-shrink:0}.store.on .dot{border:6px solid var(--acc)}
+
+/* 3. 지원서: 왼쪽 목차 · 오른쪽 문항 */
+.form{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 63px)}
+.toc{border-right:1px solid var(--line);background:var(--bg);padding:24px}
+.toc .who{font-size:13px;color:var(--sub);margin-bottom:16px}.toc .who b{display:block;color:var(--ink);font-size:16px}
+.toc a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;color:var(--ink2);text-decoration:none;font-size:14.5px;cursor:pointer}
+.toc a:hover{background:#EFEFF1}
+.toc a i{width:22px;height:22px;border-radius:50%;border:1.5px solid #C4C7CD;font:700 11px/19px sans-serif;text-align:center;font-style:normal;color:var(--sub);flex-shrink:0}
+.toc a.done i{background:var(--acc);border-color:var(--acc);color:#fff}
+.toc .left{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13.5px;color:var(--sub)}.toc .left b{color:var(--red)}
+.toc-sticky{position:sticky;top:84px}
+.fbody{padding:28px 40px;max-width:760px}
+.mstep{display:none}
+label{display:block;font-size:14.5px;font-weight:600;color:var(--ink);margin:18px 0 6px}
+label span{color:var(--red)}
+.bad input,.bad textarea,.bad select,input.bad,textarea.bad{border-color:var(--red)!important;background:#FFFBFA}
+.bad .pick button,.pick.bad button{border-color:var(--red)}
+.qsec{font-size:18px;margin:36px 0 2px;padding-top:24px;border-top:1px solid var(--line);scroll-margin-top:80px}
+.qsec:first-of-type{margin-top:8px;padding-top:0;border-top:0}
+.pick{display:flex;flex-wrap:wrap;gap:6px}
+.pick button{padding:9px 14px;border-radius:8px;font-size:14.5px;font-weight:600}
+.pick button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.trow{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}.trow b{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:8px}.trow input,.trow select{margin-bottom:8px}.trow .row2{margin-bottom:0}
+.per{display:flex;align-items:center;gap:6px;margin-bottom:8px}.per span{font-size:14px;color:var(--sub);flex-shrink:0}.per input{margin:0;flex:1;min-width:0}.per em{font-style:normal;color:var(--sub)}
+.del{border:0;background:none;color:var(--red);font-size:13px;padding:2px 6px}
+.addrow{width:100%;padding:11px;border:1px dashed #B9BCC2;color:var(--ink2);font-weight:600}
+.chk{display:flex;gap:10px;align-items:center;font-size:15.5px;font-weight:600;margin:10px 0 0;color:var(--ink);cursor:pointer}
+.chk input{width:20px;height:20px;margin:0;accent-color:var(--acc);flex-shrink:0}
+.agree{border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-top:22px;font-size:14px;color:var(--ink2);scroll-margin-top:80px}
+.agree table{width:100%;border-collapse:collapse;margin:8px 0}
+.agree td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.agree td:first-child{color:var(--sub);width:86px}
+.opt{border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-top:10px;font-size:14px;color:var(--ink2)}
+.err{color:var(--red);font-size:14px;font-weight:600;min-height:20px;margin-top:12px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:12px;padding:22px 20px 18px;max-width:360px;width:100%}
+.modal b{display:block;font-size:17px;margin-bottom:6px}.modal p{margin:0 0 18px;color:var(--ink2);font-size:15px}
+.modal div{display:flex;flex-direction:row-reverse;gap:8px}.modal button{flex:1}
+/* 아래 고정 버튼줄 */
+.foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 20px calc(12px + env(safe-area-inset-bottom));z-index:10}
+.foot div{max-width:1200px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.foot .left{flex:1;color:var(--sub);font-size:14px}.foot .left b{color:var(--red)}
+.foot .back{flex:0 0 auto}
+.foot #next{width:auto;min-width:220px}
+/* 4. 완료 */
+.done{text-align:center;padding-top:40px}
+.done .ok{width:64px;height:64px;border-radius:50%;background:var(--acc-bg);color:var(--acc);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:32px;font-weight:800}
+.no{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:10px 18px;font-size:20px;font-weight:800;margin:18px 0 6px;letter-spacing:1px}
+
+/* 휴대폰 */
+@media (max-width:760px){
+  .top{height:54px;padding:0 16px}.top span{display:none}
+  .wrap{padding:20px 16px calc(130px + env(safe-area-inset-bottom))}
+  .home,.form{display:block;min-height:0}
+  .filt{border-right:0;border-bottom:1px solid var(--line);padding:18px 16px}
+  .filt h1{font-size:21px}
+  .res{padding:14px 16px}
+  .rowi{grid-template-columns:40px minmax(0,1fr) 16px;padding:12px}.rowi .cell{display:none}.av{width:40px;height:40px}
+  .toc{display:none}
+  .mstep{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--bg);font-size:14px;position:sticky;top:54px;z-index:5}
+  .mstep b{color:var(--red)}
+  .fbody{padding:8px 16px 20px}
+  .qsec{scroll-margin-top:110px}
+  .foot div{flex-wrap:wrap}.foot .left{width:100%;flex:none}.foot #next{flex:1;min-width:0}
+  .facts div{padding:10px 12px}
+}
+</style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top"><img id="logo" alt=""><b>통합 입사지원 포탈 사이트</b></div>
-  <div class="steps" id="steps"><i></i><i></i><i></i></div>
-  <main id="view"><div class="empty">불러오는 중…</div></main>
-</div>
-<div class="foot" id="foot" hidden><div><button class="back" id="back">이전</button><button class="pri big" id="next">다음</button></div></div>
+<header class="top"><img id="logo" alt=""><b>통합 입사지원</b><span id="topr">매장에서 함께 일할 동료를 찾아요</span></header>
+<div class="steps" id="steps" hidden><i></i><i></i><i></i></div>
+<div class="wrap"><main id="view"><div class="empty">불러오는 중…</div></main></div>
+<div class="foot" id="foot" hidden><div><span class="left" id="fleft"></span><button class="back" id="back">이전</button><button class="pri big" id="next">다음</button></div></div>
 
 <script>
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwCJKmefauAr4UI5-bEt4VcvoP5kQH8Eo2hMf3bo8PN5c8N4TmEYPpMYGFJblNU6xo/exec";
 const LOGO = "data:image/png;base64,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";
-const KEEP = '채용 절차가 끝난 날부터 6개월';   // 미채용 지원자 정보 보관 기간 — 회사 기준이 정해지면 이 줄만 바꾸세요
+const KEEP = '채용 절차가 끝난 날부터 1년';   // 미채용 지원자 정보 보관 기간 — 회사 기준이 정해지면 이 줄만 바꾸세요
 const COLORS = ['#334155', '#0F766E', '#475569', '#9A3412', '#5B21B6', '#1E40AF'];
 
 const $ = s => document.querySelector(s);
@@ -171,18 +185,55 @@ function mark(name) {
   const st = { s:name, 방식:S1.방식 };
   if (!popping && curStep && (curStep !== name || (history.state || {}).방식 !== S1.방식)) history.pushState(st, '');
   else if (!curStep) history.replaceState(st, '');
-  curStep = name;
+  curStep = name; document.body.dataset.step = name;
 }
+
+// 11/20 요청①: 날짜 칸에 연도가 6자리까지 들어가던 것 → 모든 날짜 · 월 칸 최대를 9999년으로 (화면이 새로 그려질 때마다 적용)
+new MutationObserver(() => document.querySelectorAll('input[type=date]:not([max]),input[type=month]:not([max])').forEach(i => i.max = i.type === 'date' ? '9999-12-31' : '9999-12')).observe(document.documentElement, { childList:true, subtree:true });
+let leaving = false;   // 확인 창에서 [이전으로]를 고른 뒤의 뒤로가기
 addEventListener('popstate', e => {
   if (F.완료) return location.reload();   // 접수 뒤 뒤로가기 → 처음부터 (같은 지원서를 다시 내지 않게)
   const st = e.state || { s:'step1' };
-  if (curStep === 'step3' && $('#동의')) keep();   // 쓰던 지원서는 그대로 기억
+  if (curStep === 'step3' && $('#동의')) {
+    // 지원서에서 이전으로 가면 쓴 내용은 지움. 쓴 게 있으면 먼저 확인 (휴대폰 뒤로가기 · 화면 [이전] 둘 다 여기로 옴)
+    if (!leaving) { keep(); if (hasInput()) { history.pushState({ s:'step3', 방식:S1.방식 }, ''); return askLeave(); } }
+    clearForm();
+  }
+  leaving = false;
   popping = true; S1.방식 = st.방식 || S1.방식;
   try { (st.s !== 'step1' && brand() ? { intro:stepIntro, step2, step3 }[st.s] || step1 : step1)(); } finally { popping = false; }
 });
+/** 지원서 답만 처음으로 (고른 브랜드 · 매장은 그대로) + 임시 저장도 지움 */
+const F0 = JSON.stringify(F);
+function clearForm() {
+  const 남김 = { 단계:F.단계, 브랜드:F.브랜드, 매장코드:F.매장코드, 시도:F.시도, 구군:F.구군, 바로:F.바로 };
+  Object.keys(F).forEach(k => delete F[k]); Object.assign(F, JSON.parse(F0), 남김);
+  dropDraft();
+}
+/** 지원서에 뭐라도 썼는지 (사진 · 학력 · 경력 포함) */
+function hasInput() {
+  if (!brand()) return false;
+  return !!F.사진 || Q(brand().이름).some(q => q.k && String(F[q.k] || '').trim()) || F.무경력
+    || F.학력표.some(e => String(e.학교명 || '').trim()) || F.경력표.some(c => String(c.회사 || '').trim());
+}
+/** 나가기 확인 창 (휴대폰에서 파일로 열면 confirm()이 막히는 경우가 있어 직접 그림) */
+function askLeave() {
+  if ($('#leave')) return;
+  const d = document.createElement('div'); d.id = 'leave'; d.className = 'modal-bg';
+  d.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="leaveT"><b id="leaveT">작성 중인 지원서가 있어요</b>
+    <p>이전으로 가면 지금까지 쓴 내용이 지워져요.</p>
+    <div><button id="lvStay" class="pri">계속 쓰기</button><button id="lvGo">지우고 이전으로</button></div></div>`;
+  document.body.append(d);
+  const close = () => d.remove();
+  $('#lvStay').onclick = close; d.onclick = e => { if (e.target === d) close(); };
+  $('#lvGo').onclick = () => { close(); leaving = true; history.back(); };
+  $('#lvStay').focus();
+}
+// 창을 닫거나 다른 사이트로 갈 때 (임시 저장은 창을 닫으면 사라짐) → 브라우저 기본 확인
+addEventListener('beforeunload', e => { if (curStep === 'step3' && !F.완료 && $('#동의')) { keep(); if (hasInput()) { e.preventDefault(); e.returnValue = ''; } } });
 function steps() { document.querySelectorAll('#steps i').forEach((el, i) => el.classList.toggle('on', i < F.단계)); }
 function foot(next, label, back) {
-  $('#foot').hidden = !next; $('#next').textContent = label || '다음'; $('#next').onclick = next; $('#next').disabled = false;
+  $('#fleft').innerHTML = ''; $('#foot').hidden = !next; $('#next').textContent = label || '다음'; $('#next').onclick = next; $('#next').disabled = false;
   $('#back').hidden = !back; $('#back').onclick = () => curStep !== 'step1' ? history.back() : back();   // 화면 [이전]도 브라우저 기록대로
 }
 const brand = () => BRANDS.find(b => b.이름 === F.브랜드);
@@ -190,65 +241,53 @@ const brand = () => BRANDS.find(b => b.이름 === F.브랜드);
 /* 1. 브랜드 */
 const SEARCH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>';
 const avatar = n => `<div class="av" style="background:${color(n)}">${esc(String(n).slice(0, 1))}</div>`;
-const S1 = { 방식:'지역', 찾기:'', 업종:'전체', 시도:'', 구군:'' };
+const S1 = { 방식:'지역', 찾기:'', 업종:'전체', 시도:'', 구군:'', 채용중:false };
 function step1() {
   mark('step1');
-  F.단계 = 1; steps(); $('#steps').hidden = true;
-  const 매장수 = BRANDS.reduce((n, b) => n + b.매장.length, 0);
-  const 지역수 = new Set(BRANDS.flatMap(b => b.매장.map(m => m.시도).filter(Boolean))).size;
-  const 뽑는 = BRANDS.filter(b => b.채용중).sort((a, b) => b.채용중 - a.채용중).slice(0, 8);
-  $('#view').innerHTML = `
-    <section class="hero">
-      <svg viewBox="0 0 96 96" fill="none" aria-hidden="true"><rect x="14" y="30" width="68" height="50" rx="12" fill="rgba(255,255,255,.95)"/><path d="M36 30v-6a6 6 0 0 1 6-6h12a6 6 0 0 1 6 6v6" stroke="#fff" stroke-width="5" stroke-linecap="round"/><rect x="14" y="48" width="68" height="6" fill="#CBD5E1"/><rect x="42" y="44" width="12" height="14" rx="3" fill="#1E293B"/><circle cx="78" cy="22" r="7" fill="#FFD66B"/></svg>
-      <span class="tag">통합 입사지원</span>
-      <h1>매장에서 함께 일할<br>동료를 찾고 있어요</h1>
-      <p>가까운 매장이나 브랜드를 고르고<br>3분이면 지원 끝! 담당자가 직접 연락드려요</p>
-      <div class="stats"><div><b>${BRANDS.length}</b><small>브랜드</small></div><div><b>${매장수}</b><small>매장</small></div><div><b>${지역수 || '-'}</b><small>지역</small></div></div>
-    </section>
-    <div class="search">${SEARCH_SVG}<input id="q" placeholder="브랜드 이름을 입력하세요" value="${esc(S1.찾기)}"></div>
-    ${뽑는.length ? `<div class="sect">🔥 지금 많이 뽑는 브랜드</div><div class="hot">${뽑는.map(b => `<button data-b="${esc(b.이름)}">${avatar(b.이름)}${esc(b.이름)}</button>`).join('')}</div>` : ''}
-    <div class="tabs"><button data-m="지역" class="${S1.방식 === '지역' ? 'on' : ''}">📍 지역으로 찾기</button><button data-m="브랜드" class="${S1.방식 === '브랜드' ? 'on' : ''}">🏷️ 브랜드로 찾기</button></div>
-    <div id="list"></div>
-    <div class="site-foot">통합 입사지원 포탈 사이트<br>제출하신 정보는 채용 진행 목적으로만 사용됩니다.</div>`;
-  document.querySelectorAll('.hot button').forEach(el => el.onclick = () => pickBrand(el.dataset.b));
-  document.querySelectorAll('.tabs button').forEach(el => el.onclick = () => { S1.방식 = el.dataset.m; step1(); });
-  $('#q').oninput = e => {
-    S1.찾기 = e.target.value;
-    if (S1.찾기 && S1.방식 !== '브랜드') { S1.방식 = '브랜드'; step1(); const q = $('#q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); return; }
-    drawList();
-  };
+  F.단계 = 1; steps(); $('#steps').hidden = true; $('#topr').textContent = '매장에서 함께 일할 동료를 찾아요';
+  $('#view').innerHTML = `<div class="home"><aside class="filt">
+      <h1>어디서 일하고<br>싶으세요?</h1><p class="lead">매장을 고르면 바로 지원서로 가요. 약 5분 걸려요.</p>
+      <div class="seg2"><button data-m="지역" class="${S1.방식 === '지역' ? 'on' : ''}">지역으로</button><button data-m="브랜드" class="${S1.방식 === '브랜드' ? 'on' : ''}">브랜드로</button></div>
+      <input id="q" placeholder="매장 · 브랜드 이름으로 찾기" value="${esc(S1.찾기)}">
+      <div id="fx"></div>
+      <label class="only"><input type="checkbox" id="only" ${S1.채용중 ? 'checked' : ''}>지금 채용 중인 곳만</label>
+      <div class="site-foot">통합 입사지원 포탈 사이트<br>제출하신 정보는 채용 진행 목적으로만 사용됩니다.</div></aside>
+    <section class="res">${draftBanner()}<div id="list"></div></section></div>`;
+  document.querySelectorAll('.seg2 button').forEach(el => el.onclick = () => { S1.방식 = el.dataset.m; step1(); });
+  $('#q').oninput = e => { S1.찾기 = e.target.value; drawList(); };
+  $('#only').onchange = e => { S1.채용중 = e.target.checked; drawList(); };
   drawList(); foot(null);
 }
 function drawList() {
-  const el = $('#list'), q = S1.찾기.trim().toLowerCase();
+  const q = S1.찾기.trim().toLowerCase(), has = t => !q || String(t).toLowerCase().indexOf(q) >= 0;
+  const row = (d, attrs, 이름, hot, 아래, 칸) => `<button class="rowi" ${attrs}>${avatar(d)}<div>${esc(이름)}${hot ? '<span class="tag">채용 중</span>' : ''}<small>${아래}</small></div><span class="cell">${칸}</span><span class="chev">›</span></button>`;
   if (S1.방식 === '브랜드') {
     const 업종들 = [...new Set(BRANDS.map(b => b.구분).filter(Boolean))].sort();
-    const l = BRANDS.filter(b => (S1.업종 === '전체' || b.구분 === S1.업종) && (!q || b.이름.toLowerCase().indexOf(q) >= 0))
-      .sort((a, b) => a.이름.localeCompare(b.이름, 'ko'));
-    el.innerHTML = (업종들.length ? `<div class="chips">${['전체'].concat(업종들).map(c => `<button class="${S1.업종 === c ? 'on' : ''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : '')
-      + `<div class="cnt">브랜드 ${l.length}개</div><div class="rows">${l.map(b => {
-          const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
-          return `<button class="rowi" data-b="${esc(b.이름)}">${avatar(b.이름)}<div>${esc(b.이름)}${b.채용중 ? '<span class="badge">채용중</span>' : ''}<small>${b.구분 ? esc(b.구분) + ' · ' : ''}매장 ${b.매장.length}곳${지역.length ? ' · ' + esc(지역.slice(0, 3).join(' · ')) + (지역.length > 3 ? ' 외' : '') : ''}</small></div><span class="chev">›</span></button>`;
-        }).join('') || '<div class="empty">찾는 브랜드가 없어요</div>'}</div>`;
-    el.querySelectorAll('.chips button').forEach(b => b.onclick = () => { S1.업종 = b.dataset.c; drawList(); });
-    el.querySelectorAll('.rowi').forEach(b => b.onclick = () => pickBrand(b.dataset.b));
+    $('#fx').innerHTML = 업종들.length ? `<div class="chips">${['전체'].concat(업종들).map(c => `<button class="${S1.업종 === c ? 'on' : ''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : '';
+    $('#fx').querySelectorAll('.chips button').forEach(b => b.onclick = () => { S1.업종 = b.dataset.c; drawList(); });
+    const l = BRANDS.filter(b => (S1.업종 === '전체' || b.구분 === S1.업종) && (has(b.이름) || b.매장.some(m => has(m.매장))) && (!S1.채용중 || b.채용중))
+      .sort((a, b) => (b.채용중 ? 1 : 0) - (a.채용중 ? 1 : 0) || a.이름.localeCompare(b.이름, 'ko'));
+    $('#list').innerHTML = `<div class="hd"><b>${S1.업종 === '전체' ? '전체 브랜드' : esc(S1.업종)}</b><span>${l.length}개 · 채용 중 ${l.filter(b => b.채용중).length}개</span></div>`
+      + (l.length ? `<div class="rows">${l.map(b => { const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
+          return row(b.이름, `data-b="${esc(b.이름)}"`, b.이름, b.채용중, `${b.구분 ? esc(b.구분) + ' · ' : ''}매장 ${b.매장.length}곳`, esc(지역.slice(0, 3).join(' · ')) + (지역.length > 3 ? ' 외' : '')); }).join('')}</div>`
+        : '<div class="empty">찾는 브랜드가 없어요</div>');
+    $('#list').querySelectorAll('.rowi').forEach(b => b.onclick = () => pickBrand(b.dataset.b));
     return;
   }
-  // 지역으로 찾기: 브랜드 상관없이 그 지역 매장을 모아 보여줌 → 고르면 바로 지원서
+  // 지역으로 찾기: 브랜드 상관없이 그 지역 매장을 모아 보여 줌 → 고르면 바로 지원서
   const 전체 = BRANDS.flatMap(b => b.매장.map(m => Object.assign({ 브랜드:b.이름 }, m)));
   const 시도들 = [...new Set(전체.map(m => m.시도).filter(Boolean))].sort();
   const 구군들 = [...new Set(전체.filter(m => m.시도 === S1.시도).map(m => m.구군).filter(Boolean))].sort();
-  const l = 전체.filter(m => S1.시도 && m.시도 === S1.시도 && (!S1.구군 || m.구군 === S1.구군))
-    .sort((a, b) => (b.채용중 - a.채용중) || a.매장.localeCompare(b.매장, 'ko'));
-  el.innerHTML = `<div class="row2">
-      <select id="r1"><option value="">시 · 도 고르기</option>${시도들.map(s => `<option ${s === S1.시도 ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
-      <select id="r2" ${S1.시도 ? '' : 'disabled'}><option value="">시 · 군 · 구 전체</option>${구군들.map(s => `<option ${s === S1.구군 ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select></div>`
-    + (S1.시도
-      ? `<div class="cnt">${esc(S1.시도)}${S1.구군 ? ' ' + esc(S1.구군) : ''} · 매장 ${l.length}곳</div><div class="rows">${l.map(m => `<button class="rowi" data-b="${esc(m.브랜드)}" data-c="${esc(m.매장코드)}">${avatar(m.브랜드)}<div>${esc(m.매장)}${m.채용중 ? '<span class="badge">채용중</span>' : ''}<small>${esc(m.브랜드)} · ${esc([m.시도, m.구군].filter(Boolean).join(' '))}</small></div><span class="chev">›</span></button>`).join('') || '<div class="empty">이 지역에는 아직 매장이 없어요</div>'}</div>`
-      : '<div class="empty">시 · 도를 고르면 가까운 매장이 보여요</div>');
+  $('#fx').innerHTML = `<div class="row2"><select id="r1"><option value="">지역 전체</option>${시도들.map(x => `<option ${x === S1.시도 ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
+    <select id="r2" ${S1.시도 ? '' : 'disabled'}><option value="">구 · 군 전체</option>${구군들.map(x => `<option ${x === S1.구군 ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>`;
   $('#r1').onchange = e => { S1.시도 = e.target.value; S1.구군 = ''; drawList(); };
   $('#r2').onchange = e => { S1.구군 = e.target.value; drawList(); };
-  el.querySelectorAll('.rowi').forEach(b => b.onclick = () => { F.브랜드 = b.dataset.b; F.매장코드 = b.dataset.c; F.시도 = ''; F.구군 = ''; F.바로 = true; step3(); });
+  const l = 전체.filter(m => (!S1.시도 || m.시도 === S1.시도) && (!S1.구군 || m.구군 === S1.구군) && (has(m.매장) || has(m.브랜드)) && (!S1.채용중 || m.채용중))
+    .sort((a, b) => (b.채용중 ? 1 : 0) - (a.채용중 ? 1 : 0) || a.매장.localeCompare(b.매장, 'ko'));
+  $('#list').innerHTML = `<div class="hd"><b>${esc([S1.시도, S1.구군].filter(Boolean).join(' ') || '전체 지역')}</b><span>매장 ${l.length}곳 · 채용 중 ${l.filter(m => m.채용중).length}곳</span></div>`
+    + (l.length ? `<div class="rows">${l.map(m => row(m.브랜드, `data-b="${esc(m.브랜드)}" data-c="${esc(m.매장코드)}"`, m.매장, m.채용중, esc(m.브랜드), esc([m.시도, m.구군].filter(Boolean).join(' ')))).join('')}</div>`
+      : '<div class="empty">조건에 맞는 매장이 없어요</div>');
+  $('#list').querySelectorAll('.rowi').forEach(b => b.onclick = () => { F.브랜드 = b.dataset.b; F.매장코드 = b.dataset.c; F.시도 = ''; F.구군 = ''; F.바로 = true; step3(); });
 }
 function pickBrand(name) { if (F.브랜드 !== name) Object.assign(F, { 시도:'', 구군:'', 매장코드:'' }); F.브랜드 = name; F.바로 = false; stepIntro(); }
 
@@ -256,28 +295,24 @@ function pickBrand(name) { if (F.브랜드 !== name) Object.assign(F, { 시도:'
 function stepIntro() {
   mark('intro');
   F.단계 = 1; $('#steps').hidden = true; window.scrollTo(0, 0);
-  const b = brand(), c = color(b.이름);
+  const b = brand(), c = color(b.이름); $('#topr').textContent = b.이름;
   const 지역 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))];
   const 뽑는매장 = b.매장.filter(m => m.채용중).length;
-  const sec = (아이콘, 제목, 내용, 빈말) => `<div class="info"><h3><i>${아이콘}</i>${제목}</h3>${내용 ? `<p>${esc(내용)}</p>` : `<p class="none">${빈말}</p>`}</div>`;
+  const sec = (제목, 내용, 빈말) => `<div class="info"><h3>${제목}</h3>${내용 ? `<p>${esc(내용)}</p>` : `<p class="none">${빈말}</p>`}</div>`;
   $('#view').innerHTML = `
-    <div class="intro" style="--brand-bg:${c}22">
-      <div class="logo" style="background:${c}">${esc(b.이름.slice(0, 1))}${b.로고 ? `<img src="${esc(b.로고)}" alt="${esc(b.이름)} 로고" style="position:absolute;inset:0" onerror="this.remove()">` : ''}</div>
-      <h1>${esc(b.이름)}</h1>
-      ${b.한줄소개 ? `<p class="one">${esc(b.한줄소개)}</p>` : ''}
-      <div class="pills">${b.구분 ? `<span>${esc(b.구분)}</span>` : ''}${b.채용중 ? '<span class="hotp">🔥 지금 채용중</span>' : ''}</div>
-    </div>
-    <div class="facts"><div><small>매장</small><b>${b.매장.length}곳</b></div><div><small>지역</small><b>${esc(지역.slice(0, 2).join(' · ') || '-')}${지역.length > 2 ? ' 외' : ''}</b></div><div><small>채용중 매장</small><b>${뽑는매장}곳</b></div></div>
-    ${sec('🏷️', '브랜드 소개', b.소개, '지원하시면 담당자가 자세히 안내해 드려요.')}
-    ${sec('🕒', '근무 형태', b.근무형태, '매장마다 달라요. 지원 후 안내해 드려요.')}
-    ${sec('⭐', '이런 분이면 좋아요', b.우대사항, '처음이어도 괜찮아요. 누구나 지원할 수 있어요.')}`;
+    <div class="intro"><div class="logo" style="background:${c}">${esc(b.이름.slice(0, 1))}${b.로고 ? `<img src="${esc(b.로고)}" alt="${esc(b.이름)} 로고" style="position:absolute;inset:0" onerror="this.remove()">` : ''}</div>
+      <div><h1>${esc(b.이름)}${b.채용중 ? '<span class="tag">채용 중</span>' : ''}</h1>${b.한줄소개 ? `<p class="one">${esc(b.한줄소개)}</p>` : ''}${b.구분 ? `<div class="lead" style="margin:2px 0 0;font-size:14px">${esc(b.구분)}</div>` : ''}</div></div>
+    <div class="facts"><div><small>매장</small><b>${b.매장.length}곳</b></div><div><small>지역</small><b>${esc(지역.slice(0, 2).join(' · ') || '-')}${지역.length > 2 ? ' 외' : ''}</b></div><div><small>채용 중 매장</small><b>${뽑는매장}곳</b></div></div>
+    ${sec('브랜드 소개', b.소개, '지원하시면 담당자가 자세히 안내해 드려요.')}
+    ${sec('근무 형태', b.근무형태, '매장마다 달라요. 지원 후 안내해 드려요.')}
+    ${sec('이런 분이면 좋아요', b.우대사항, '처음이어도 괜찮아요. 누구나 지원할 수 있어요.')}`;
   foot(step2, '이 브랜드에 지원하기', step1);
 }
 
 /* 2. 지역 · 매장 */
 function step2() {
   mark('step2');
-  F.단계 = 2; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
+  F.단계 = 2; $('#steps').hidden = false; steps(); window.scrollTo(0, 0); $('#topr').textContent = brand().이름 + ' 지원';
   const b = brand(), 시도들 = [...new Set(b.매장.map(m => m.시도).filter(Boolean))].sort();
   const 구군들 = [...new Set(b.매장.filter(m => !F.시도 || m.시도 === F.시도).map(m => m.구군).filter(Boolean))].sort();
   const 매장들 = b.매장.filter(m => (!F.시도 || m.시도 === F.시도) && (!F.구군 || m.구군 === F.구군));
@@ -305,7 +340,6 @@ const QALL = b => [
   { k:'거주지', t:'현재 거주지 (시/구/동)', req:1, ph:'예: 서울시 용산구 이태원동', max:50 },
   { k:'성별', t:'성별', pick:FORM.성별 },
   { mil:1, mod:'병역' },
-  { k:'유선전화', t:'유선전화', type:'tel', max:20, ph:'선택' },
   { sec:'지원 분야 및 근무 형태' },
   { k:'근무형태', t:'근무 형태', req:1, pick:FORM.근무형태 },
   { k:'근무기간', t:'근무 가능 기간', req:1, pick:FORM.근무기간 },
@@ -344,7 +378,7 @@ function step3() {
   const 지역 = m ? [m.시도, m.구군].filter(Boolean).join(' ') : [F.시도, F.구군].filter(Boolean).join(' ');
   const lab = q => `<label>${esc(q.t)}${q.req ? ' <span>*</span>' : ''}</label>`;
   const pk = (id, list, on) => `<div class="pick" id="p${id}">${list.map(x => `<button type="button" class="${on(x) ? 'on' : ''}" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
-  const field = q => q.sec ? `<h2 class="qsec">${q.sec}</h2>`
+  const field = (q, i) => q.sec ? `<h2 class="qsec" id="qs${i}">${q.sec}</h2>`
     : q.mil ? `<div id="w병역" ${F.성별 === '남성' ? '' : 'hidden'}><label>병역</label>${pk('군별', FORM.군별, x => F.병역.군별 === x)}
         ${[['병과', '병과 (선택)'], ['계급', '계급 (선택)'], ['기간', '복무 기간 (예: 2019.01 ~ 2020.07)'], ['면제사유', '면제 사유 (면제인 경우)']].map(([k, ph]) =>
           `<input id="병역_${k}" maxlength="40" placeholder="${ph}" value="${esc(F.병역[k])}" style="margin-top:8px">`).join('')}</div>`
@@ -352,24 +386,28 @@ function step3() {
                + (ITEMS.특기.length ? `<label>해당하는 것을 모두 골라 주세요</label>${pk('특기', ITEMS.특기, x => F.특기.indexOf(x) >= 0)}` : '')
     : q.edu ? `<label>학력 사항${q.req ? ' <span>*</span>' : ''}</label><div class="lead" style="font-size:13px;margin:0 0 4px">최종 학력까지 적어 주세요</div>` + F.학력표.map((e, i) => `<div class="trow"><b>${e.구분}</b>
         <input id="학_학교명${i}" maxlength="100" placeholder="학교명" value="${esc(e.학교명)}">
-        <div class="row2"><input id="학_기간${i}" maxlength="40" placeholder="재학 기간 (예: 2015.03 ~ 2018.02)" value="${esc(e.기간)}">
-        <select id="학_수학${i}">${['', ...FORM.수학].map(x => `<option value="${x}" ${x === e.수학 ? 'selected' : ''}>${x || '졸업 여부'}</option>`).join('')}</select></div>
-        ${i ? `<input id="학_전공${i}" maxlength="100" placeholder="전공" value="${esc(e.전공)}">` : ''}</div>`).join('')
+        <input id="학_기간${i}" maxlength="40" placeholder="재학 기간 (예: 2015.03 ~ 2018.02)" value="${esc(e.기간)}">
+        ${i ? `<input id="학_전공${i}" maxlength="100" placeholder="전공 (예: 경영학과)" value="${esc(e.전공)}">` : ''}
+        <div class="row2"><select id="학_수학${i}">${['', ...FORM.수학].map(x => `<option value="${x}" ${x === e.수학 ? 'selected' : ''}>${x || '졸업 여부'}</option>`).join('')}</select></div></div>`).join('')
     : q.car ? `<label>경력 사항${q.req ? ' <span>*</span>' : ''}</label><div id="w경력">${carHtml()}</div>`
     : q.photo ? `<label>이력서 사진 (얼굴 정면 사진)</label><input id="사진" type="file" accept="image/jpeg,image/png"><div class="lead" id="사진안내" style="font-size:13px;margin:4px 0 0">${F.사진 ? '사진이 첨부됐어요' : '선택'}</div>`
     : q.pick ? lab(q) + pk(q.k, q.pick, x => F[q.k] === x)
     : lab(q) + (q.area ? `<textarea id="${q.k}" maxlength="${q.max}" placeholder="${esc(q.ph || '')}">${esc(F[q.k])}</textarea>`
       : `<input id="${q.k}" type="${q.type || 'text'}"${q.max ? ` maxlength="${q.max}"` : ''}${q.ac ? ` autocomplete="${q.ac}"` : ''}${q.type === 'tel' ? ' inputmode="numeric"' : ''} placeholder="${esc(q.ph || '')}" value="${esc(F[q.k])}">`);
-  $('#view').innerHTML = `<h1>지원서를<br>작성해 주세요</h1><p class="lead">${esc(b.이름)} · ${esc(m ? m.매장 : '매장 상관없음')}${지역 ? ' · ' + esc(지역) : ''}</p>
-    ${Q(b.이름).map(field).join('')}
+  $('#topr').textContent = b.이름 + (m ? ' ' + m.매장 : '') + ' 지원';
+  $('#view').innerHTML = `<div class="mstep" id="mstep"></div><div class="form"><aside class="toc"><div class="toc-sticky">
+      <div class="who">지원하는 곳<b>${esc(m ? m.매장 : b.이름)}</b>${esc(m ? b.이름 + (지역 ? ' · ' + 지역 : '') : '매장 상관없음' + (지역 ? ' · ' + 지역 : ''))}</div>
+      <div id="tocl"></div><div class="left" id="tleft"></div></div></aside><div class="fbody">
+    <h1>지원서</h1><p class="lead">빨간 별(*)만 꼭 써 주세요. 새로고침해도 쓰던 내용은 남아 있어요.</p>
+    ${Q(b.이름).map((q, i) => field(q, i)).join('')}
     <div class="hp" aria-hidden="true"><input id="웹사이트" tabindex="-1" autocomplete="off"></div>
-    <div class="agree">
+    <div class="agree" id="qagree">
       <b>개인정보 수집 · 이용 동의</b>
       <table>
-        <tr><td>수집 항목</td><td>성명, 생년월일, 휴대폰 번호, 이메일, 거주지, 희망 브랜드 · 매장, 근무 조건, 학력 · 경력, 자기소개 · 지원동기, 외국어 · 특기 (선택: 성별, 병역, 유선전화, 포트폴리오, 사진)</td></tr>
+        <tr><td>수집 항목</td><td>성명, 생년월일, 휴대폰 번호, 이메일, 거주지, 희망 브랜드 · 매장, 근무 조건, 학력 · 경력, 자기소개 · 지원동기, 외국어 · 특기 (선택: 성별, 병역, 포트폴리오, 사진)</td></tr>
         <tr><td>이용 목적</td><td>채용 전형 진행 및 결과 안내 연락</td></tr>
         <tr><td>보관 기간</td><td>${KEEP} (채용되면 인사 관리에 사용)</td></tr>
-        <tr><td>안내</td><td>동의하지 않을 수 있으며, 동의하지 않으면 지원할 수 없습니다. 주민등록번호 · 계좌번호는 받지 않습니다.</td></tr>
+        <tr><td>안내</td><td>동의하지 않을 수 있으며, 동의하지 않으면 지원할 수 없습니다.</td></tr>
       </table>
       <label class="chk"><input type="checkbox" id="동의" ${F.동의 ? 'checked' : ''}>위 내용에 동의합니다 <span>*</span></label>
       <b style="display:block;margin-top:16px">개인정보 제3자 제공 동의</b>
@@ -383,7 +421,7 @@ function step3() {
     </div>
     <div class="opt"><b>인재풀 등록 (선택)</b><br>이번에 함께하지 못해도, 맞는 자리가 생기면 먼저 연락드릴게요. 위 정보를 ${TALENT_KEEP} 보관하며 언제든 삭제를 요청할 수 있어요.
       <label class="chk"><input type="checkbox" id="인재풀" ${F.인재풀 ? 'checked' : ''}>인재풀 등록에 동의합니다 (선택)</label></div>
-    <div class="err" id="err"></div>`;
+    <div class="err" id="err"></div></div></div>`;
   // 하나만 고르는 버튼 (다시 누르면 해제) / 여러 개 고르는 버튼
   const one = (id, get, set, after) => { const box = $('#p' + id); if (box) box.querySelectorAll('button').forEach(x => x.onclick = () => { set(get() === x.dataset.v ? '' : x.dataset.v);
     box.querySelectorAll('button').forEach(y => y.classList.toggle('on', y.dataset.v === get())); if (after) after(); }); };
@@ -400,19 +438,66 @@ function step3() {
     img.src = URL.createObjectURL(f); };
   $('#연락처').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 11); e.target.value = d.replace(/^(\d{3})(\d{1,4})?(\d{1,4})?$/, (_, a, b2, c) => [a, b2, c].filter(Boolean).join('-')); };
   foot(submit, '지원하기', () => { keep(); F.바로 ? step1() : step2(); });
+  bindProgress();
 }
+/* 지원서 진행: 구역마다 필수 칸이 다 찼는지 → 왼쪽 목차 ✓, "필수 N개 남음". 쓰는 동안 이 창에 임시 저장 */
+function need() {   // [{구역, 빈칸이면 true, 칸}]
+  const out = []; let sec = -1;
+  Q(brand().이름).forEach((q, i) => {
+    if (q.sec) { sec = i; return; }
+    if (q.k && q.req) out.push({ sec, 빔: !String(F[q.k] || '').trim() });
+    if (q.mod === '학력' && q.req) out.push({ sec, 빔: !F.학력표.some(e => String(e.학교명 || '').trim()) });
+    if (q.mod === '경력' && q.req) out.push({ sec, 빔: !F.무경력 && !F.경력표.some(c => String(c.회사 || '').trim()) });
+  });
+  out.push({ sec:'agree', 빔:!F.동의 }, { sec:'agree', 빔:!F.동의3 });
+  return out;
+}
+function progress() {
+  if (curStep !== 'step3' || !$('#tocl')) return;
+  keep(); saveDraft();
+  const n = need(), 남 = n.filter(x => x.빔).length, qs = Q(brand().이름);
+  const secs = qs.map((q, i) => q.sec ? [i, q.sec] : null).filter(Boolean).concat([['agree', (qs.filter(q => q.sec).length + 1) + '. 동의']]);
+  $('#tocl').innerHTML = secs.map(([i, t]) => { const mine = n.filter(x => x.sec === i), ok = mine.length && !mine.some(x => x.빔);
+    return `<a class="${ok ? 'done' : ''}" data-s="${i}"><i>${ok ? '✓' : String(t).split('.')[0]}</i>${esc(String(t).replace(/^\d+\.\s*/, ''))}</a>`; }).join('');
+  $('#tocl').querySelectorAll('a').forEach(a => a.onclick = () => { const el = a.dataset.s === 'agree' ? $('#qagree') : $('#qs' + a.dataset.s); if (el) el.scrollIntoView({ behavior:'smooth' }); });
+  const msg = 남 ? `필수 <b>${남}개</b> 남았어요` : '필수 칸을 다 썼어요 ✓';
+  $('#tleft').innerHTML = msg + '<br><span>[지원하기]를 누르면 빠진 칸으로 바로 가요</span>';
+  $('#mstep').innerHTML = msg;
+  if (!$('#err').textContent) $('#fleft').innerHTML = msg;
+}
+function bindProgress() {
+  let t; const later = () => { clearTimeout(t); t = setTimeout(progress, 150); };
+  $('#view').oninput = e => { e.target.classList.remove('bad'); const b = e.target.closest('.bad'); if (b) b.classList.remove('bad'); later(); };
+  $('#view').onclick = later;
+  progress();
+}
+// 임시 저장: sessionStorage (이 창을 닫으면 사라짐 · 사진은 빼고). 새로고침해도 이어 쓸 수 있게
+let DRAFT = null;
+function saveDraft() { try { sessionStorage.setItem('apply_draft', JSON.stringify(Object.assign({}, F, { 사진:null, 완료:false }))); } catch (e) {} }
+function loadDraft() { try { const d = JSON.parse(sessionStorage.getItem('apply_draft') || 'null'); DRAFT = d && BRANDS.some(b => b.이름 === d.브랜드) ? d : null; } catch (e) { DRAFT = null; } }
+function dropDraft() { try { sessionStorage.removeItem('apply_draft'); } catch (e) {} DRAFT = null; }
+function draftBanner() {
+  if (!DRAFT) return '';
+  const b = BRANDS.find(x => x.이름 === DRAFT.브랜드), m = b && b.매장.find(x => String(x.매장코드) === DRAFT.매장코드);
+  return `<div class="draft"><b>쓰던 지원서가 있어요 · ${esc(m ? m.매장 : DRAFT.브랜드)}</b><button class="pri" onclick="resumeDraft()">이어 쓰기</button><button onclick="dropDraft();step1()">지우기</button></div>`;
+}
+function resumeDraft() { Object.assign(F, DRAFT, { 완료:false }); DRAFT = null; step3(); }
 /* 경력: 한 줄에 회사 하나 (최대 5개) */
 function carHtml() {
   return `<label class="chk" style="margin-top:0"><input type="checkbox" id="무경력" ${F.무경력 ? 'checked' : ''} onchange="keepCar();F.무경력=this.checked;$('#w경력').innerHTML=carHtml()">경력이 없어요</label>`
     + (F.무경력 ? '' : F.경력표.map((c, i) => `<div class="trow"><b>경력 ${i + 1}${F.경력표.length > 1 ? ` <button type="button" class="del" onclick="carDel(${i})">지우기</button>` : ''}</b>
       <input id="경_회사${i}" maxlength="100" placeholder="회사명 · 브랜드 (예: OO 판교점)" value="${esc(c.회사 || '')}">
-      <div class="row2"><input id="경_기간${i}" maxlength="40" placeholder="근무 기간 (예: 2023.03 ~ 2024.08)" value="${esc(c.기간 || '')}">
-      <input id="경_직위${i}" maxlength="40" placeholder="직위 (예: 스태프)" value="${esc(c.직위 || '')}"></div>
-      <input id="경_업무${i}" maxlength="100" placeholder="담당 업무 (예: 판매 · 고객응대 · 재고)" value="${esc(c.업무 || '')}">
-      <input id="경_퇴사사유${i}" maxlength="100" placeholder="퇴사 사유 (예: 계약 만료 · 학업 · 재직 중)" value="${esc(c.퇴사사유 || '')}"></div>`).join('')
+      <div class="per"><span>근무 기간</span><input type="month" id="경_시작${i}" value="${ym(c.기간, 0)}" aria-label="근무 시작 (년 · 월)"><em>~</em><input type="month" id="경_끝${i}" value="${ym(c.기간, 1)}" aria-label="근무 끝 (년 · 월, 재직 중이면 비워 두세요)"></div>
+      <input id="경_업무${i}" maxlength="100" placeholder="담당 업무 (예: 판매 · 고객응대 · 재고 관리)" value="${esc(c.업무 || '')}">
+      <div class="row2"><input id="경_직위${i}" maxlength="40" placeholder="직위 (예: 스태프)" value="${esc(c.직위 || '')}">
+      <input id="경_퇴사사유${i}" maxlength="100" placeholder="퇴사 사유" value="${esc(c.퇴사사유 || '')}"></div></div>`).join('')
       + (F.경력표.length < 5 ? `<button type="button" class="addrow" onclick="carAdd()">+ 경력 추가 (최대 5개)</button>` : ''));
 }
-function keepCar() { if (!$('#경_회사0')) return; F.경력표.forEach((c, i) => ['회사', '기간', '직위', '업무', '퇴사사유'].forEach(k => c[k] = $('#경_' + k + i).value)); }
+function keepCar() { if (!$('#경_회사0')) return; F.경력표.forEach((c, i) => { ['회사', '직위', '업무', '퇴사사유'].forEach(k => c[k] = $('#경_' + k + i).value);
+  const s = $('#경_시작' + i).value, e = $('#경_끝' + i).value;   // 11/20 요청②: 년 · 월 고르기 → "2023.03 ~ 2024.08" (끝이 비면 "~ 재직 중")
+  c.기간 = s || e ? (s ? s.replace('-', '.') : '') + ' ~ ' + (e ? e.replace('-', '.') : '재직 중') : ''; }); }
+/** "2023.03 ~ 2024.08" → n번째(0 시작, 1 끝)를 month 칸 값 "2023-03"으로 */
+const ym = (기간, n) => { const m = String(기간 || '').split('~')[n]; const x = m && m.match(/(\d{4})\D(\d{1,2})/); return x ? x[1] + '-' + x[2].padStart(2, '0') : ''; };
 function carAdd() { keepCar(); F.경력표.push({}); $('#w경력').innerHTML = carHtml(); }
 function carDel(i) { keepCar(); F.경력표.splice(i, 1); $('#w경력').innerHTML = carHtml(); }
 function keep() {
@@ -425,17 +510,21 @@ function keep() {
 }
 async function submit() {
   keep();
-  const err = m => { $('#err').textContent = m; };
+  const err = (m, el) => {   // 문구는 아래 버튼줄에도 (항상 보임), 빠진 칸은 빨갛게 + 그 칸으로 이동
+    $('#err').textContent = m; $('#fleft').innerHTML = `<b>${esc(m)}</b>`;
+    document.querySelectorAll('#view .bad').forEach(x => x.classList.remove('bad'));
+    if (el) { el.classList.add('bad'); el.scrollIntoView({ block:'center', behavior:'smooth' }); if (/INPUT|TEXTAREA|SELECT/.test(el.tagName)) el.focus({ preventScroll:true }); }
+  };
   const miss = Q(brand().이름).find(q => q.k && q.req && !String(F[q.k] || '').trim());
-  if (miss) return err(miss.t.replace(/\s*\(.*$/, '') + ' 항목을 입력해 주세요.');
+  if (miss) return err(miss.t.replace(/\s*\(.*$/, '') + ' 항목을 입력해 주세요.', miss.pick ? $('#p' + miss.k) : $('#' + miss.k));
   const 문항 = Q(brand().이름), 필요 = m => 문항.some(q => q.mod === m && q.req);
-  if (필요('학력') && !F.학력표.some(e => e.학교명.trim())) return err('학력 사항을 입력해 주세요.');
-  if (필요('경력') && !F.무경력 && !F.경력표.some(c => String(c.회사 || '').trim())) return err('경력 사항을 입력하거나 "경력이 없어요"를 골라 주세요.');
-  if (!/^01\d{8,9}$/.test(F.연락처.replace(/\D/g, ''))) return err('휴대폰 번호를 확인해 주세요.');
-  if (String(F.이메일 || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.이메일.trim())) return err('이메일을 확인해 주세요.');
-  if (String(F.포트폴리오 || '').trim() && !/^https?:\/\/\S+$/.test(F.포트폴리오.trim())) return err('포트폴리오 링크는 https:// 로 시작하게 적어 주세요.');
-  if (!F.동의) return err('개인정보 수집 · 이용에 동의해 주세요.');
-  if (!F.동의3) return err('개인정보 제3자 제공에 동의해 주세요.');
+  if (필요('학력') && !F.학력표.some(e => e.학교명.trim())) return err('학력 사항을 입력해 주세요.', $('#학_학교명0'));
+  if (필요('경력') && !F.무경력 && !F.경력표.some(c => String(c.회사 || '').trim())) return err('경력 사항을 입력하거나 "경력이 없어요"를 골라 주세요.', $('#w경력'));
+  if (!/^01\d{8,9}$/.test(F.연락처.replace(/\D/g, ''))) return err('휴대폰 번호를 확인해 주세요.', $('#연락처'));
+  if (String(F.이메일 || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.이메일.trim())) return err('이메일을 확인해 주세요.', $('#이메일'));
+  if (String(F.포트폴리오 || '').trim() && !/^https?:\/\/\S+$/.test(F.포트폴리오.trim())) return err('포트폴리오 링크는 https:// 로 시작하게 적어 주세요.', $('#포트폴리오'));
+  if (!F.동의) return err('개인정보 수집 · 이용에 동의해 주세요.', $('#동의').closest('label'));
+  if (!F.동의3) return err('개인정보 제3자 제공에 동의해 주세요.', $('#동의3').closest('label'));
   $('#next').disabled = true; $('#next').textContent = '보내는 중…';
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
   const 답 = {}, 추가답변 = {}; Q('').filter(q => q.k).forEach(q => { const v = String(F[q.k] || '').trim(); q.id ? 추가답변[q.id] = v : 답[q.k] = v; });
@@ -450,7 +539,7 @@ async function submit() {
 
 /* 4. 완료 */
 function done(no, m) {
-  F.완료 = true; history.replaceState({ s:'done' }, '');
+  F.완료 = true; history.replaceState({ s:'done' }, ''); dropDraft(); document.body.dataset.step = 'done'; $('#topr').textContent = '접수 완료';
   $('#steps').hidden = true; foot(null); window.scrollTo(0, 0);
   $('#view').innerHTML = `<div class="done"><div class="ok">✓</div><h1>지원이 접수되었어요</h1>
     <p class="lead" style="margin:0">${m && m.매장.indexOf(F.브랜드) === 0 ? esc(m.매장) : esc(F.브랜드) + (m ? ' ' + esc(m.매장) : '')} 담당자가 확인한 뒤<br>입력하신 번호로 연락드릴게요</p>
@@ -462,7 +551,7 @@ $('#logo').src = LOGO;
 call({ action:'지원안내' }).then(r => {
   BRANDS = (r && r.브랜드) || []; if (r && r.항목) ITEMS = r.항목;
   if (!BRANDS.length) return $('#view').innerHTML = '<div class="empty">지금은 지원을 받는 브랜드가 없어요.</div>';
-  step1();
+  loadDraft(); step1();
 }).catch(() => { $('#view').innerHTML = '<div class="empty">잠시 후 다시 열어 주세요.</div>'; });
 </script>
 </body>
