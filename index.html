@@ -376,7 +376,7 @@ function step3() {
   F.단계 = 3; $('#steps').hidden = false; steps(); window.scrollTo(0, 0);
   const b = brand(), m = b.매장.find(x => String(x.매장코드) === F.매장코드);
   const 지역 = m ? [m.시도, m.구군].filter(Boolean).join(' ') : [F.시도, F.구군].filter(Boolean).join(' ');
-  const lab = q => `<label>${esc(q.t)}${q.req ? ' <span>*</span>' : ''}</label>`;
+  const lab = q => `<label${q.k ? ` for="${esc(q.k)}"` : ''}>${esc(q.t)}${q.req ? ' <span>*</span>' : ''}</label>`;
   const pk = (id, list, on) => `<div class="pick" id="p${id}">${list.map(x => `<button type="button" class="${on(x) ? 'on' : ''}" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
   const field = (q, i) => q.sec ? `<h2 class="qsec" id="qs${i}">${q.sec}</h2>`
     : q.mil ? `<div id="w병역" ${F.성별 === '남성' ? '' : 'hidden'}><label>병역</label>${pk('군별', FORM.군별, x => F.병역.군별 === x)}
@@ -390,10 +390,10 @@ function step3() {
         ${i ? `<input id="학_전공${i}" maxlength="100" placeholder="전공 (예: 경영학과)" value="${esc(e.전공)}">` : ''}
         <div class="row2"><select id="학_수학${i}">${['', ...FORM.수학].map(x => `<option value="${x}" ${x === e.수학 ? 'selected' : ''}>${x || '졸업 여부'}</option>`).join('')}</select></div></div>`).join('')
     : q.car ? `<label>경력 사항${q.req ? ' <span>*</span>' : ''}</label><div id="w경력">${carHtml()}</div>`
-    : q.photo ? `<label>이력서 사진 (얼굴 정면 사진)</label><input id="사진" type="file" accept="image/jpeg,image/png"><div class="lead" id="사진안내" style="font-size:13px;margin:4px 0 0">${F.사진 ? '사진이 첨부됐어요' : '선택'}</div>`
+    : q.photo ? `<label for="사진">이력서 사진 (얼굴 정면 사진)</label><input id="사진" type="file" accept="image/jpeg,image/png"><div class="lead" id="사진안내" style="font-size:13px;margin:4px 0 0">${F.사진 ? '사진이 첨부됐어요' : F.사진다시 ? '<b style="color:#C2410C">새로고침하면 사진은 지워져요. 사진을 다시 골라 주세요</b>' : '선택'}</div>`
     : q.pick ? lab(q) + pk(q.k, q.pick, x => F[q.k] === x)
     : lab(q) + (q.area ? `<textarea id="${q.k}" maxlength="${q.max}" placeholder="${esc(q.ph || '')}">${esc(F[q.k])}</textarea>`
-      : `<input id="${q.k}" type="${q.type || 'text'}"${q.max ? ` maxlength="${q.max}"` : ''}${q.ac ? ` autocomplete="${q.ac}"` : ''}${q.type === 'tel' ? ' inputmode="numeric"' : ''} placeholder="${esc(q.ph || '')}" value="${esc(F[q.k])}">`);
+      : `<input id="${q.k}" type="${q.type || 'text'}"${q.max ? ` maxlength="${q.max}"` : ''}${q.ac ? ` autocomplete="${q.ac}"` : ''}${q.type === 'tel' ? ' inputmode="numeric"' : ''} ${q.k === '면접가능일' || q.k === '근무시작일' ? ` min="${new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10)}"` : ''} placeholder="${esc(q.ph || '')}" value="${esc(F[q.k])}">`);
   $('#topr').textContent = b.이름 + (m ? ' ' + m.매장 : '') + ' 지원';
   $('#view').innerHTML = `<div class="mstep" id="mstep"></div><div class="form"><aside class="toc"><div class="toc-sticky">
       <div class="who">지원하는 곳<b>${esc(m ? m.매장 : b.이름)}</b>${esc(m ? b.이름 + (지역 ? ' · ' + 지역 : '') : '매장 상관없음' + (지역 ? ' · ' + 지역 : ''))}</div>
@@ -433,7 +433,7 @@ function step3() {
     const img = new Image(); img.onload = () => {   // 서버에 보내기 전에 줄임 (가로세로 600px 이하 JPG)
       const k = Math.min(1, 600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      F.사진 = { name:'사진.jpg', type:'image/jpeg', data:c.toDataURL('image/jpeg', 0.85) }; URL.revokeObjectURL(img.src); $('#사진안내').textContent = '사진이 첨부됐어요'; };
+      F.사진 = { name:'사진.jpg', type:'image/jpeg', data:c.toDataURL('image/jpeg', 0.85) }; F.사진다시 = false; URL.revokeObjectURL(img.src); $('#사진안내').textContent = '사진이 첨부됐어요'; };
     img.onerror = () => { F.사진 = null; $('#사진안내').textContent = '사진 파일을 열 수 없어요. JPG · PNG로 골라 주세요'; };
     img.src = URL.createObjectURL(f); };
   $('#연락처').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 11); e.target.value = d.replace(/^(\d{3})(\d{1,4})?(\d{1,4})?$/, (_, a, b2, c) => [a, b2, c].filter(Boolean).join('-')); };
@@ -473,7 +473,7 @@ function bindProgress() {
 }
 // 임시 저장: sessionStorage (이 창을 닫으면 사라짐 · 사진은 빼고). 새로고침해도 이어 쓸 수 있게
 let DRAFT = null;
-function saveDraft() { try { sessionStorage.setItem('apply_draft', JSON.stringify(Object.assign({}, F, { 사진:null, 완료:false }))); } catch (e) {} }
+function saveDraft() { try { sessionStorage.setItem('apply_draft', JSON.stringify(Object.assign({}, F, { 사진:null, 사진다시: !!(F.사진 || F.사진다시), 완료:false }))); } catch (e) {} }
 function loadDraft() { try { const d = JSON.parse(sessionStorage.getItem('apply_draft') || 'null'); DRAFT = d && BRANDS.some(b => b.이름 === d.브랜드) ? d : null; } catch (e) { DRAFT = null; } }
 function dropDraft() { try { sessionStorage.removeItem('apply_draft'); } catch (e) {} DRAFT = null; }
 function draftBanner() {
@@ -523,6 +523,8 @@ async function submit() {
   if (!/^01\d{8,9}$/.test(F.연락처.replace(/\D/g, ''))) return err('휴대폰 번호를 확인해 주세요.', $('#연락처'));
   if (String(F.이메일 || '').trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.이메일.trim())) return err('이메일을 확인해 주세요.', $('#이메일'));
   if (String(F.포트폴리오 || '').trim() && !/^https?:\/\/\S+$/.test(F.포트폴리오.trim())) return err('포트폴리오 링크는 https:// 로 시작하게 적어 주세요.', $('#포트폴리오'));
+  { const 오늘 = new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);   // 휴대폰은 min을 무시하고 고를 수 있어서 한 번 더
+    for (const k of ['면접가능일', '근무시작일']) if ($('#' + k) && F[k] && String(F[k]) < 오늘) return err('지난 날짜예요. 오늘 이후로 골라 주세요.', $('#' + k)); }
   if (!F.동의) return err('개인정보 수집 · 이용에 동의해 주세요.', $('#동의').closest('label'));
   if (!F.동의3) return err('개인정보 제3자 제공에 동의해 주세요.', $('#동의3').closest('label'));
   $('#next').disabled = true; $('#next').textContent = '보내는 중…';
